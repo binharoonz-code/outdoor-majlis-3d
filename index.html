@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Outdoor Majlis 3D</title>
+<meta name="description" content="A 20 × 40 m outdoor night majlis in 3D: tent, pantry, fire pit, walkway and lights. Look around and play the walk-through.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Outdoor Majlis 3D">
+<meta property="og:description" content="Tap to look around the majlis in 3D and play the walk-through.">
+<meta property="og:image" content="https://binharoonz-code.github.io/outdoor-majlis-3d/preview.jpg">
+<meta property="og:url" content="https://binharoonz-code.github.io/outdoor-majlis-3d/">
+<meta name="robots" content="noindex">
+<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one viewer (3D + live plan) at the top, AG's tap questions under it, general note last. */
+:root{
+  --bg:#f1f0ec;--surface:#ffffff;--surface2:#f6f5f2;--ink:#1c1b19;--muted:#67625b;--line:#dcd8d0;
+  --accent:#c4501b;--accent-ink:#ffffff;--good:#2c7a4c;
+  --plot:#ecdcbc;--outside:#e2ded6;--grid:rgba(90,70,40,.10);--grid5:rgba(90,70,40,.24);
+  --fence:#3a2e24;--tentfill:#f6eedd;--tentline:#5a4330;--seat:#f1ebdf;--wood:#8a5a2c;--gravel:#d3c8b5;
+  --lamp:#f2a516;--water:#3a7db3;--sewage:#7d6b45;--cab:#e46d1e;--sel:#1f6fd1;
+  --f-display:'Space Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111316;--surface:#1a1d22;--surface2:#21252c;--ink:#ece9e3;--muted:#a39e95;--line:#30343c;
+  --accent:#ff7b3c;--accent-ink:#1d0d04;--good:#5fc48d;
+  --plot:#5b4b34;--outside:#25282e;--grid:rgba(255,240,210,.07);--grid5:rgba(255,240,210,.17);
+  --fence:#eadcc5;--tentfill:#3d3429;--tentline:#e6cda9;--seat:#e4dccd;--wood:#c08a5b;--gravel:#6e6659;
+  --lamp:#ffc95a;--water:#6cabdc;--sewage:#b89f6c;--cab:#ff9a4d;--sel:#6aa8ff;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111316;--surface:#1a1d22;--surface2:#21252c;--ink:#ece9e3;--muted:#a39e95;--line:#30343c;
+  --accent:#ff7b3c;--accent-ink:#1d0d04;--good:#5fc48d;
+  --plot:#5b4b34;--outside:#25282e;--grid:rgba(255,240,210,.07);--grid5:rgba(255,240,210,.17);
+  --fence:#eadcc5;--tentfill:#3d3429;--tentline:#e6cda9;--seat:#e4dccd;--wood:#c08a5b;--gravel:#6e6659;
+  --lamp:#ffc95a;--water:#6cabdc;--sewage:#b89f6c;--cab:#ff9a4d;--sel:#6aa8ff;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1520px;margin:0 auto;padding-block:14px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(1.45rem,3vw,2.05rem)}
+h2{font-size:1.2rem}
+.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 18px}
+.meta{color:var(--muted);font-variant-numeric:tabular-nums}
+.save-state{font-size:.86rem;color:var(--muted)}
+.save-state.ok{color:var(--good)}
+button{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--surface2);border-radius:9px;padding:7px 11px;min-height:38px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:focus-visible,.opt:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+.viewer{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.vbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px;border-bottom:1px solid var(--line)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg .btn{border:0;border-radius:0;min-height:36px}
+.vbar .hint{color:var(--muted);font-size:.82rem;margin-left:auto}
+.panes{display:grid;grid-template-columns:minmax(0,1fr);height:min(76vh,860px);min-height:440px}
+.panes[data-mode="both"]{grid-template-columns:minmax(280px,33%) minmax(0,1fr)}
+.pane{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column}
+.p3d{background:#0d1222;order:2}
+.pplan{order:1;border-right:1px solid var(--line)}
+.panes[data-mode="3d"] .pplan,.panes[data-mode="plan"] .p3d{display:none}
+#c3d{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#c3d:active{cursor:grabbing}
+.msg3d{position:absolute;inset:0;display:grid;place-items:center;color:#e9e4da;text-align:center;padding:20px;font-size:.95rem}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+#labels span{position:absolute;transform:translate(-50%,-100%);background:rgba(12,14,22,.78);color:#fff;font-size:11.5px;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.ctl3d{position:absolute;left:0;right:0;bottom:0;display:flex;gap:6px;padding:8px;overflow-x:auto;background:linear-gradient(transparent,rgba(6,8,16,.72))}
+.ctl3d .btn{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.22);backdrop-filter:blur(4px)}
+.ctl3d .btn[aria-pressed="true"]{background:#fff;color:#111;border-color:#fff}
+.tourcap{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(10,12,20,.75);color:#fff;padding:5px 12px;border-radius:20px;font-size:.85rem}
+.ptools{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border-bottom:1px solid var(--line)}
+.svgbox{flex:1;min-height:0;display:flex;justify-content:center;padding:6px;overflow:hidden}
+#plan{height:100%;width:100%;max-width:100%;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.selbar{border-top:1px solid var(--line);padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--surface2)}
+.selbar strong{font-family:var(--f-display);margin-right:4px}
+.selbar label{display:inline-flex;align-items:center;gap:4px;font-size:.85rem;color:var(--muted)}
+.selbar input{width:62px;padding:6px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);font-variant-numeric:tabular-nums}
+.addmenu{position:absolute;z-index:5;top:52px;left:8px;right:8px;max-height:70%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+/* plan drawing */
+.pl-out{fill:var(--outside)}.pl-plot{fill:var(--plot)}
+.pl-grid{stroke:var(--grid);stroke-width:.04}.pl-grid5{stroke:var(--grid5);stroke-width:.06}
+.pl-txt{fill:var(--muted);font-family:var(--f-body);font-size:.75px}
+.pl-lbl{fill:var(--ink);font-family:var(--f-body);font-size:.66px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:.16px;pointer-events:none}
+.pl-fence{stroke:var(--fence);stroke-width:.16;fill:none}
+.pl-open{stroke:var(--fence);stroke-width:.06;stroke-dasharray:.3 .3;fill:none}
+.pl-pole{fill:var(--fence)}.pl-polelit{fill:var(--lamp);stroke:var(--fence);stroke-width:.05}
+.it{cursor:pointer}
+.it .sh{stroke:rgba(0,0,0,.35);stroke-width:.05}
+.it.sel .sh{stroke:var(--sel);stroke-width:.14}
+.it.sel{touch-action:none}
+.cab line,.cab polyline{stroke:var(--cab);stroke-width:.12;stroke-dasharray:.45 .25;fill:none}
+.dim line{stroke:var(--sel);stroke-width:.05}
+.dim text{fill:var(--sel);font-size:.62px;font-weight:600;font-family:var(--f-body);paint-order:stroke;stroke:var(--surface);stroke-width:.14px}
+/* questions */
+.qhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px}
+.qhead p{margin:0;color:var(--muted);max-width:70ch}
+.qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;align-items:start}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.q h3{margin:0;font-size:1rem;font-family:var(--f-display);font-weight:600;text-wrap:balance}
+.q .why{margin:-4px 0 0;font-size:.84rem;color:var(--muted)}
+.q .multi{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--line);background:var(--surface2);border-radius:10px;padding:9px 11px;min-height:44px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:9px;max-width:100%}
+.opt:hover{border-color:var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.opt .rec{display:block;font-size:.7rem;font-weight:600;color:var(--good);letter-spacing:.03em}
+.opt[aria-pressed="true"] .rec{color:var(--accent-ink)}
+.opt svg{flex:none;width:34px;height:64px}
+.q textarea,.gen textarea{width:100%;min-height:54px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--ink);padding:8px 10px;font:inherit;font-size:.92rem;resize:vertical;box-sizing:border-box}
+.gen{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.gen .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.next{color:var(--muted);font-size:.9rem;margin:0}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:22px;font-size:.9rem;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+@media (max-width:899px){.seg .both{display:none}.vbar .hint{display:none}.panes{height:72vh}
+  .panes[data-mode="plan"]{height:auto;min-height:0}.panes[data-mode="plan"] .svgbox{flex:none}
+  .panes[data-mode="plan"] #plan{height:auto;aspect-ratio:26/52}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.public #addBtn,.public #undoBtn,.public #resetBtn,.public #snapBtn,.public .selbar label,.public .selbar .btn:not([data-act="done"]){display:none!important}
+.public .panes{height:min(84vh,920px)}
+.shot .top,.shot .vbar,.shot .ctl3d,.shot .ptools,.shot #labels{display:none!important}.shot .wrap{padding:0!important;max-width:none}.shot .viewer{border:0;border-radius:0}.shot .panes{height:100vh!important}
+</style>
+
+<div class="wrap public">
+  <header class="top">
+    <div>
+      <h1>Outdoor Majlis</h1>
+      <div class="meta">3D plan · plot 20 × 40 m · people shown 1.8 m tall · draft</div>
+    </div>
+    
+  </header>
+
+  <section class="viewer" aria-label="Plan and 3D view">
+    <div class="vbar">
+      <div class="seg" role="group" aria-label="View">
+        <button class="btn" id="m3d" aria-pressed="true">3D</button>
+        <button class="btn" id="mplan" aria-pressed="false">Plan</button>
+        <button class="btn both" id="mboth" aria-pressed="false">Both</button>
+      </div>
+      <span class="hint">Drag to look around, two fingers or the wheel to zoom. Tap anything on the plan to see its distances.</span>
+    </div>
+    <div class="panes" id="panes" data-mode="3d">
+      <div class="pane pplan" id="pplan">
+        <div class="ptools">
+          <button class="btn primary" id="addBtn" aria-expanded="false">+ Add item</button>
+          <button class="btn" id="undoBtn">Undo</button>
+          <button class="btn" id="resetBtn">Reset plan</button>
+          <button class="btn" id="cabBtn" aria-pressed="false">Cables</button>
+          <button class="btn" id="snapBtn" aria-pressed="true">Snap 0.25 m</button>
+        </div>
+        <div class="addmenu" id="addMenu" hidden></div>
+        <div class="svgbox"><svg id="plan" role="img" aria-label="Top view of the 20 by 40 metre plot"></svg></div>
+        <div class="selbar" id="selbar" hidden>
+          <strong id="selName"></strong>
+          <label>Width <input id="selW" type="number" step="0.1" min="0.2"></label>
+          <label>Depth <input id="selD" type="number" step="0.1" min="0.2"></label>
+          <button class="btn" data-act="rl" aria-label="Turn left 15 degrees">⟲ 15°</button>
+          <button class="btn" data-act="rr" aria-label="Turn right 15 degrees">⟳ 15°</button>
+          <button class="btn" data-act="r90">90°</button>
+          <button class="btn" data-act="u" aria-label="Move back 0.25 m">↑</button>
+          <button class="btn" data-act="d" aria-label="Move forward 0.25 m">↓</button>
+          <button class="btn" data-act="l" aria-label="Move left 0.25 m">←</button>
+          <button class="btn" data-act="r" aria-label="Move right 0.25 m">→</button>
+          <button class="btn" data-act="dup">Copy</button>
+          <button class="btn" data-act="del">Remove</button>
+          <button class="btn" data-act="done">Done</button>
+        </div>
+      </div>
+      <div class="pane p3d" id="p3d">
+        <canvas id="c3d" aria-label="3D view of the majlis"></canvas>
+        <div id="labels"></div>
+        <div class="tourcap" id="tourCap" hidden></div>
+        <div class="msg3d" id="msg3d" hidden></div>
+        <div class="ctl3d">
+          <button class="btn" id="tourBtn">▶ Walk-through</button>
+          <button class="btn" id="nightBtn" aria-pressed="true">Night</button>
+          <button class="btn" id="orbitBtn" aria-pressed="true">Auto-turn</button>
+          <button class="btn" data-view="bird">Bird's-eye</button>
+          <button class="btn" data-view="gate">From the gate</button>
+          <button class="btn" data-view="tent">Inside the tent</button>
+          <button class="btn" data-view="top">Top</button>
+          <button class="btn" id="lblBtn" aria-pressed="true">Labels</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+<script>window.__MAJLIS = {"choices":{"ac":"ducted","addons":["sink","bbq","festoon","palms","play"],"front":"closed","gate":"3","inside":["sockets","fridge","psink","cook","coffeein"],"lstep":"2","lstyle":["lantern"],"north":"back-right","power":"grid","seats":"mixed","tent":"B-left","truck":["front"],"wc":"front"},"layout":{"ac":"ducted","fence":{"frontClosed":true,"step":2},"items":[{"d":0.3,"id":"gate","r":0,"t":"gate","w":3,"x":12.5,"y":0},{"closed":["back","right"],"d":6,"id":"tent","main":true,"pantryDoor":0,"pantrySide":"right","r":90,"t":"tent","w":14,"x":3.466745138168335,"y":30.122803688049316},{"d":31,"follow":"gate","id":"path","r":0,"t":"path","w":1.5,"x":12.5,"y":15.5},{"d":6.4,"id":"fire","r":0,"t":"bonfire","w":6.4,"x":5.112151145935059,"y":15.189031600952148},{"d":2.4,"doors":["front","right"],"id":"pantry","r":0,"t":"pantry","w":6,"x":3.466745138168335,"y":38.32},{"d":0.7,"id":"acout","r":0,"t":"acout","w":2.4,"x":13,"y":39.3},{"d":0.4,"follow":"gate","id":"board","r":0,"t":"board","w":0.9,"x":15.1,"y":0.6},{"d":0.4,"id":"c1","r":0,"t":"corner","w":0.4,"x":0.35,"y":0.35},{"d":0.4,"id":"c2","r":0,"t":"corner","w":0.4,"x":19.65,"y":0.35},{"d":0.4,"id":"c3","r":0,"t":"corner","w":0.4,"x":0.35,"y":39.65},{"d":0.4,"id":"c4","r":0,"t":"corner","w":0.4,"x":19.65,"y":39.65},{"d":0.35,"id":"p1","r":180,"s":"k","t":"person","w":0.5,"x":12.2,"y":5.5},{"d":0.35,"id":"p2","r":180,"s":"k","t":"person","w":0.5,"x":12.85,"y":9.8},{"d":0.35,"id":"p3","r":115,"s":"a","t":"person","w":0.5,"x":3.74,"y":18.48},{"d":0.35,"id":"p4","r":-120,"s":"k","t":"person","w":0.5,"x":10.12,"y":18.2},{"d":0.35,"id":"p5","r":5,"s":"c","t":"person","w":0.5,"x":6.69,"y":23.59},{"d":0.35,"id":"p6","r":0,"s":"k","t":"person","w":0.5,"x":10.19,"y":28.2},{"d":0.35,"id":"p7","r":25,"s":"a","t":"person","w":0.5,"x":13.7,"y":28.3},{"d":0.35,"id":"p8","r":180,"s":"k","t":"person","w":0.5,"x":5,"y":6.8},{"col":1,"d":1.9,"id":"car-1","r":90,"t":"car","w":4.6,"x":2.2,"y":-4.3},{"col":2,"d":1.9,"id":"car-2","r":90,"t":"car","w":4.6,"x":7.8,"y":-4.3},{"col":3,"d":1.9,"id":"car-3","r":90,"t":"car","w":4.6,"x":19,"y":-4.3},{"d":1.8,"id":"wc","r":180,"t":"toilets","w":3.4,"x":2.4,"y":4.4},{"d":2,"id":"septic","r":0,"t":"septic","w":3,"x":2.4,"y":1.7},{"d":1.6,"id":"water","r":0,"t":"water","w":2.4,"x":6.2,"y":1.5},{"addon":"sink","d":0.5,"id":"add-sink","r":180,"t":"sink","w":0.8,"x":4.699999999999999,"y":4.5},{"addon":"bbq","d":0.8,"id":"add-bbq","r":0,"t":"bbq","w":1.6,"x":10.8,"y":38.7},{"addon":"festoon","d":9,"follow":"fire","id":"add-festoon","r":0,"t":"festoon","w":9,"x":5.112151145935059,"y":15.189031600952148},{"addon":"palms","d":3,"id":"add-palm-1","r":0,"t":"palm","w":3,"x":18.112957572937013,"y":17.559197616577148},{"addon":"palms","d":3,"id":"add-palm-2","r":0,"t":"palm","w":3,"x":17.60515251159668,"y":2.0301162719726564},{"addon":"play","d":5,"id":"add-play","r":0,"t":"play","w":5,"x":17,"y":9},{"d":5.3,"id":"path2","r":90,"t":"path","w":1.5,"x":9.12,"y":30},{"d":0.6,"follow":"tent","id":"coffee-lako33","r":0,"t":"coffee","w":2.2,"x":5.167,"y":36.673},{"d":0.8,"follow":"tent","id":"chair-lako34","r":70,"t":"chair","w":0.8,"x":1.067,"y":23.773},{"d":0.8,"follow":"tent","id":"chair-lako35","r":82,"t":"chair","w":0.8,"x":1.067,"y":24.573},{"d":0.8,"follow":"tent","id":"chair-lako36","r":110,"t":"chair","w":0.8,"x":1.067,"y":36.473},{"d":0.8,"follow":"tent","id":"chair-lako37","r":98,"t":"chair","w":0.8,"x":1.067,"y":35.673},{"d":0.9,"follow":"tent","id":"seat-lako38","r":90,"t":"seat","w":10.2,"x":1.067,"y":30.123},{"d":0.6,"follow":"tent","id":"table-lako39","r":90,"t":"table","w":1.2,"x":2.217,"y":26.723},{"d":0.6,"follow":"tent","id":"table-lako40","r":90,"t":"table","w":1.2,"x":2.217,"y":30.123},{"d":0.6,"follow":"tent","id":"table-lako41","r":90,"t":"table","w":1.2,"x":2.217,"y":33.523},{"d":0.9,"follow":"tent","id":"seat-lako42","r":0,"t":"seat","w":1.35,"x":2.242,"y":36.523},{"d":0.5,"follow":"tent","id":"lantern-lako43","r":90,"t":"lantern","w":0.5,"x":3.467,"y":25.456},{"d":0.5,"follow":"tent","id":"lantern-lako44","r":90,"t":"lantern","w":0.5,"x":3.467,"y":30.123},{"d":0.5,"follow":"tent","id":"lantern-lako45","r":90,"t":"lantern","w":0.5,"x":3.467,"y":34.789}],"lights":{"every":2,"styles":["lantern"]},"north":"back-right","seats":"mixed","v":1}};</script>
+<script>if (/[?&]shot/.test(location.search)) document.documentElement.classList.add('shot');</script>
+<script>
+/* core.js */
+/* Outdoor Majlis - shared state, catalogue, presets. Plan units are metres:
+   x 0..20 left to right seen from the entrance, y 0..40 from the entrance (front) to the back.
+   Item r = degrees counter-clockwise; an item's own "front" is its local -y side. */
+(function(){
+'use strict';
+const MJ = window.MJ = {W:20, D:40};
+MJ.CAT = {
+  tent:{n:'Tent 14 × 6 m',w:14,d:6}, seat:{n:'Majlis seating',w:6,d:0.9}, table:{n:'Low table',w:1.2,d:0.6},
+  lantern:{n:'Hanging tent light',w:0.5,d:0.5,light:1}, bonfire:{n:'Fire pit and seats',w:6.4,d:6.4,round:1},
+  path:{n:'Walkway',w:1.5,d:10}, toilets:{n:'2 toilets',w:3.4,d:1.8}, septic:{n:'Sewage tank (under ground)',w:3,d:2,under:1},
+  water:{n:'Water tank (under ground)',w:2.4,d:1.6,under:1}, pantry:{n:'Pantry',w:2.4,d:4}, acout:{n:'AC machines',w:2.4,d:0.7},
+  board:{n:'Power board',w:0.9,d:0.4}, corner:{n:'Corner light',w:0.4,d:0.4,light:1}, person:{n:'Person, 1.8 m',w:0.5,d:0.35},
+  car:{n:'Car (outside)',w:4.6,d:1.9}, gate:{n:'Gate',w:3,d:0.3}, festoon:{n:'String lights',w:9,d:9,light:1},
+  bbq:{n:'BBQ grill',w:1.6,d:0.8}, coffee:{n:'Coffee corner',w:2,d:0.9}, palm:{n:'Palm tree',w:3,d:3,round:1},
+  sink:{n:'Hand-wash sink',w:0.8,d:0.5}, ext:{n:'Fire extinguisher',w:0.4,d:0.4}, screen:{n:'Movie screen',w:3.2,d:0.3},
+  play:{n:'Kids play corner',w:5,d:5}, gen:{n:'Generator',w:2.2,d:1.1}, bench:{n:'Bench',w:1.8,d:0.5},
+  tv:{n:'TV',w:1.6,d:0.4}, speaker:{n:'Speaker',w:0.45,d:0.45}, chair:{n:'Armchair',w:0.8,d:0.8}
+};
+MJ.ADDABLE = ['person','bonfire','path','seat','chair','table','bench','lantern','corner','festoon','palm','bbq','coffee',
+  'toilets','pantry','sink','ext','tv','speaker','screen','gen','play','car'];
+/* Recommended answers: the plan uses these until AG taps something else. */
+MJ.REC = {front:'closed', gate:'3', tent:'A-left', wc:'front', truck:[], north:'', power:'grid', lstep:'2',
+  lstyle:['lantern'], ac:'ducted', seats:'floor', addons:[], inside:[]};
+MJ.ans = {}; MJ.cmt = {};
+MJ.val = k => { const a = MJ.ans[k]; if (Array.isArray(a)) return a; if (a != null && a !== '') return a; return MJ.REC[k]; };
+
+MJ.rot = (x,y,r) => { const a=r*Math.PI/180, c=Math.cos(a), s=Math.sin(a); return [x*c-y*s, x*s+y*c]; };
+MJ.toPlan = (it,lx,ly) => { const p = MJ.rot(lx,ly,it.r||0); return [it.x+p[0], it.y+p[1]]; };
+MJ.face = (dx,dy) => Math.atan2(dx,-dy)*180/Math.PI;
+MJ.aabb = it => {
+  const hw=it.w/2, hd=it.d/2;
+  if ((MJ.CAT[it.t]||{}).round) return [it.x-hw, it.y-hd, it.x+hw, it.y+hd];
+  const xs=[], ys=[];
+  [[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].forEach(c => { const p=MJ.toPlan(it,c[0],c[1]); xs.push(p[0]); ys.push(p[1]); });
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+};
+let seq = 0;
+MJ.uid = t => t + '-' + Date.now().toString(36).slice(-4) + (++seq);
+MJ.clone = o => JSON.parse(JSON.stringify(o));
+MJ.find = id => MJ.L.items.find(i => i.id === id);
+
+function base(){ return {v:1, fence:{frontClosed:true, step:2}, lights:{every:2, styles:['lantern']}, ac:'ducted', seats:'floor', north:'', items:[]}; }
+function add(L,it){ const c=MJ.CAT[it.t]||{w:1,d:1}; if(it.w==null) it.w=c.w; if(it.d==null) it.d=c.d; if(it.r==null) it.r=0; if(!it.id) it.id=MJ.uid(it.t); L.items.push(it); return it; }
+function put(L,id,t,props){ let it=L.items.find(i=>i.id===id); if(!it){ it={id,t}; add(L,it); } Object.assign(it,props); return it; }
+function drop(L,pred){ L.items = L.items.filter(i => !pred(i)); }
+MJ.addItem = (it) => add(MJ.L, it);
+
+/* Back zone (tent, pantry, AC) for the four tent answers. */
+MJ.tentPlace = mode => {
+  const B = /^B/.test(mode||''), right = /right$/.test(mode||'');
+  /* the pantry is joined to the back of the tent: one door into the tent, one door to the outside */
+  let z = !B
+    ? {tent:{x:7.5,y:34,r:0}, gate:7.5, pathTo:31, fire:[13,20], pantry:{x:2.5,y:38.25,r:0,w:4,d:2.4,doors:['front','right']}, ac:{x:8,y:39.3,r:0}, bbq:{x:16.8,y:33.5,r:0}}
+    : {tent:{x:3.5,y:30,r:90}, gate:12.5, pathTo:30, link:[9.5,30,6], fire:[5.1,15.2], pantry:{x:3.5,y:38.25,r:0,w:6,d:2.4,doors:['front','right']}, ac:{x:13,y:39.3,r:0}, bbq:{x:10.8,y:38.7,r:0}};
+  if (right){
+    const m = p => Object.assign({}, p, {x:20-p.x, r:p.r ? -p.r : 0});
+    z.tent=m(z.tent); z.pantry=m(z.pantry); z.ac=m(z.ac); z.bbq=m(z.bbq);
+    z.pantry.doors = z.pantry.doors.map(s => s==='left' ? 'right' : s==='right' ? 'left' : s);
+    z.gate = 20 - z.gate; z.fire = [20 - z.fire[0], z.fire[1]]; if (z.link) z.link = [20 - z.link[0], z.link[1], z.link[2]];
+  }
+  return z;
+};
+
+/* Closed tent sides follow the fence and the pantry: a side within 1.6 m of the fence, or touching the pantry, is closed. */
+MJ.autoClosed = t => {
+  const P = MJ.L.items.find(i => i.id==='pantry'), pb = P ? MJ.aabb(P) : null, hw = t.w/2, hd = t.d/2, out = [];
+  t.pantrySide = null;
+  const S = {front:[0,-hd,0,-1,1], back:[0,hd,0,1,1], left:[-hw,0,-1,0,0], right:[hw,0,1,0,0]};
+  for (const s in S){
+    const [lx,ly,nx,ny,ax] = S[s], m = MJ.toPlan(t,lx,ly), n = MJ.rot(nx,ny,t.r||0);
+    let dist = Infinity;
+    if (n[0]>0.7) dist = 20-m[0]; else if (n[0]<-0.7) dist = m[0]; else if (n[1]>0.7) dist = 40-m[1]; else if (n[1]<-0.7) dist = m[1];
+    if (pb){
+      const half = ax ? hw : hd;
+      for (let k=0;k<=12;k++){ const a = -half + 2*half*k/12, q = MJ.toPlan(t, ax ? a : lx+nx*0.5, ax ? ly+ny*0.5 : a);
+        if (q[0]>pb[0]-0.15 && q[0]<pb[2]+0.15 && q[1]>pb[1]-0.15 && q[1]<pb[3]+0.15){
+          dist = 0; t.pantrySide = s; const c = MJ.rot(P.x-t.x, P.y-t.y, -(t.r||0)); t.pantryDoor = +(ax ? c[0] : c[1]).toFixed(2); break; } }
+    }
+    if (dist < 1.6) out.push(s);
+  }
+  return out.length ? out : ['back'];
+};
+/* Keep the tent long side as its width, recompute closed sides, rebuild the inside when they change. */
+MJ.syncTent = () => {
+  const t = MJ.L.items.find(i => i.id==='tent'); if (!t) return false;
+  let changed = false;
+  if (t.d > t.w){ const w = t.w; t.w = t.d; t.d = w; t.r = (((t.r||0)+90)%360+360)%360; changed = true; }
+  const before = JSON.stringify([t.closed, t.pantrySide, t.pantryDoor]);
+  t.closed = MJ.autoClosed(t);
+  if (changed || before !== JSON.stringify([t.closed, t.pantrySide, t.pantryDoor])){ MJ.tentInterior(MJ.L); return true; }
+  return false;
+};
+
+/* Seats, tables and lights inside the tent follow its closed sides. */
+MJ.tentInterior = L => {
+  const t = L.items.find(i => i.id==='tent') || L.items.find(i => i.t==='tent');
+  drop(L, i => i.follow==='tent');
+  if (!t) return;
+  const cl = t.closed || ['back'], hw = t.w/2, hd = t.d/2, sd = 0.9, ins = 0.15, style = L.seats || 'floor', inside = MJ.val('inside');
+  const SD = {back:{p:a=>[a,hd], n:[0,-1], rr:0, x:1}, front:{p:a=>[a,-hd], n:[0,1], rr:180, x:1}, left:{p:a=>[-hw,a], n:[1,0], rr:90, x:0}, right:{p:a=>[hw,a], n:[-1,0], rr:-90, x:0}};
+  const len = s => SD[s].x ? t.w : t.d;
+  const mk = (type,lx,ly,rr,props) => { const p = MJ.toPlan(t,lx,ly); return add(L, Object.assign({t:type, x:+p[0].toFixed(3), y:+p[1].toFixed(3), r:(((t.r||0)+rr)%360+360)%360, follow:'tent'}, props||{})); };
+  const at = (s,a,off) => { const q = SD[s], p = q.p(a); return [p[0]+q.n[0]*off, p[1]+q.n[1]*off]; };
+  const place = (type,s,a,off,dr,props) => { const p = at(s,a,off); return mk(type,p[0],p[1],SD[s].rr+(dr||0),props); };
+  /* seat runs along the closed sides; the longer side runs into the corner, the shorter one stops before it */
+  const runs = [];
+  cl.forEach(s => {
+    const q = SD[s], h = len(s)/2; let a0 = -h+0.2, a1 = h-0.2, open0 = true, open1 = true;
+    cl.forEach(o => { if (o===s || SD[o].x===q.x) return;
+      if (len(o) > len(s) || (len(o)===len(s) && o<s)){ const atMax = q.x ? o==='right' : o==='back'; if (atMax){ a1 = h-ins-sd-0.05; open1 = false; } else { a0 = -h+ins+sd+0.05; open0 = false; } }
+      else { const atMax = q.x ? o==='right' : o==='back'; if (atMax) open1 = false; else open0 = false; } });
+    if (s===t.pantrySide){ const d = Math.max(a0+0.6, Math.min(a1-0.6, t.pantryDoor||0)); runs.push({s,a0,a1:d-0.55,open0,open1:false,door:1}, {s,a0:d+0.55,a1,open0:false,open1,door:1}); }
+    else runs.push({s,a0,a1,open0,open1});
+  });
+  /* coffee corner inside: against the pantry wall, at the end that faces an open side */
+  if (inside.includes('coffeein')){
+    const r = runs.filter(r => r.door && (r.open0 || r.open1) && r.a1-r.a0>1.2)[0] || runs.filter(r => (r.open0 || r.open1) && r.a1-r.a0>2.5).sort((a,b) => (b.a1-b.a0)-(a.a1-a.a0))[0];
+    if (r){ const cw = Math.min(2.2, r.a1-r.a0); if (r.open1){ place('coffee',r.s,r.a1-cw/2,ins+0.3,0,{w:cw,d:0.6}); r.a1 -= cw+0.1; } else { place('coffee',r.s,r.a0+cw/2,ins+0.3,0,{w:cw,d:0.6}); r.a0 += cw+0.1; } }
+  }
+  /* mixed seating: two off-white chairs at each end of the main wall */
+  if (style==='mixed'){
+    const main = cl.slice().sort((a,b) => len(b)-len(a))[0], mr = runs.filter(r => r.s===main);
+    const first = mr.sort((a,b) => a.a0-b.a0)[0], last = mr[mr.length-1];
+    if (first && first.a1-first.a0 >= 3){ [0.45,1.25].forEach(o => place('chair',main,first.a0+o,ins+0.45,o<1?-20:-8)); first.a0 += 1.7; }
+    if (last && last.a1-last.a0 >= 3){ [0.45,1.25].forEach(o => place('chair',main,last.a1-o,ins+0.45,o<1?20:8)); last.a1 -= 1.7; }
+  }
+  runs.forEach(r => {
+    const l = r.a1-r.a0; if (l < 0.8) return;
+    place('seat',r.s,(r.a0+r.a1)/2,ins+sd/2,0,{w:+l.toFixed(2),d:sd});
+    if (l >= 2.5){ const n = Math.max(1, Math.round(l/3.2)); for (let k=0;k<n;k++) place('table',r.s,r.a0+l*(k+0.5)/n,ins+sd+0.7,0); }
+  });
+  const longX = t.w >= t.d, ln = longX ? t.w : t.d, nl = Math.max(2, Math.round(ln/4.5));
+  for (let k=0;k<nl;k++){ const a = -ln/2 + ln*(k+0.5)/nl; mk('lantern', longX ? a : 0, longX ? 0 : a, 0); }
+  const shortOpen = (longX ? ['right','left'] : ['back','front']).filter(s => !cl.includes(s))[0];
+  if (inside.includes('tv') && shortOpen) place('tv',shortOpen,0,0.45,0);
+  const longOpen = (longX ? ['front','back'] : ['left','right']).filter(s => !cl.includes(s))[0];
+  if (inside.includes('speakers') && longOpen){ const h = len(longOpen)/2; place('speaker',longOpen,-h+0.5,0.45,0); place('speaker',longOpen,h-0.5,0.45,0); }
+};
+
+MJ.wcPlace = L => {
+  const gate = L.items.find(i=>i.id==='gate') || {x:7.5}, tent = L.items.find(i=>i.id==='tent');
+  let s;
+  if (MJ.val('wc')==='back'){
+    const left = tent ? tent.x>10 : false, tx = left ? 2.4 : 17.6;
+    s = {toilets:{x:tx,y:38.95,r:0}, septic:{x:tx,y:36.4,r:0}, water:{x:left?6.6:13.4,y:38.85,r:0}, sink:{x:left?tx+2.3:tx-2.3,y:39.3,r:0}};
+  } else {
+    const left = gate.x>10, tx = left ? 2.4 : 17.6;
+    s = {toilets:{x:tx,y:4.4,r:180}, septic:{x:tx,y:1.7,r:0}, water:{x:left?6.2:13.8,y:1.5,r:0}, sink:{x:left?tx+2.3:tx-2.3,y:4.5,r:180}};
+  }
+  put(L,'wc','toilets',s.toilets); put(L,'septic','septic',s.septic); put(L,'water','water',s.water);
+  MJ._sinkAt = s.sink;
+  const sink = L.items.find(i=>i.id==='add-sink'); if (sink) Object.assign(sink, s.sink);
+};
+
+MJ.genPlace = L => {
+  const v = MJ.val('power'), wc = L.items.find(i=>i.id==='wc');
+  if (v==='gen' || v==='both'){ const front = !wc || wc.y<20; put(L,'gen','gen',{x:wc?wc.x:17.6, y:front?-2.3:42.0, r:0}); }
+  else drop(L, i => i.id==='gen');
+};
+
+MJ.carsPlace = L => {
+  const g = L.items.find(i=>i.id==='gate') || {x:7.5}, gen = L.items.find(i=>i.id==='gen');
+  const slots = [2.2,5.0,7.8,10.6,13.4,16.2,19.0].filter(x => Math.abs(x-g.x)>3.2 && (!gen || gen.y>20 || Math.abs(x-gen.x)>2.7));
+  const pick = slots.length>=3 ? [slots[0], slots[Math.floor(slots.length/2)], slots[slots.length-1]] : slots;
+  ['car-1','car-2','car-3'].forEach((id,k) => { const c=L.items.find(i=>i.id===id); if (c && pick[k]!=null){ c.x=pick[k]; c.y=-4.3; c.r=90; } });
+};
+
+MJ.peoplePlace = L => {
+  const g = L.items.find(i=>i.id==='gate')||{x:7.5}, f = L.items.find(i=>i.id==='fire'), t = L.items.find(i=>i.id==='tent'), wc = L.items.find(i=>i.id==='wc');
+  const P = (id,x,y,r) => { const p=L.items.find(i=>i.id===id); if (p){ p.x=+x.toFixed(2); p.y=+y.toFixed(2); p.r=Math.round(r); } };
+  P('p1',g.x-0.3,5.5,180); P('p2',g.x+0.35,9.8,180);
+  if (f){ const R=f.w/2+0.4; [205,330,95].forEach((deg,k) => { const a=deg*Math.PI/180, x=f.x+Math.cos(a)*R, y=f.y+Math.sin(a)*R; P('p'+(k+3),x,y,MJ.face(f.x-x,f.y-y)); }); }
+  if (t){ const a=MJ.toPlan(t,-t.w/2.6,-t.d/2+1.2), b=MJ.toPlan(t,t.w/5,-t.d/2+1.3); P('p6',a[0],a[1],t.r||0); P('p7',b[0],b[1],(t.r||0)+25); }
+  if (wc){ const s = wc.x>10 ? -1 : 1, front = wc.y<20; P('p8',wc.x+s*2.6,wc.y+(front?2.4:-2.4),front?180:0); }
+};
+
+MJ.addonsPlace = L => {
+  const a = MJ.val('addons');
+  drop(L, i => i.addon && !a.includes(i.addon));
+  const f = L.items.find(i=>i.id==='fire') || {x:13,y:20,w:6.4}, g = L.items.find(i=>i.id==='gate') || {x:7.5};
+  const pantry = L.items.find(i=>i.id==='pantry'), R = f.w/2;
+  const mk = (id,t,addon,props) => { if (!L.items.some(i=>i.id===id)) add(L, Object.assign({id,t,addon}, props)); };
+  if (a.includes('ext')){
+    mk('add-ext-1','ext','ext',{x:f.x+(f.x>10?-1:1)*(R+0.7), y:f.y-R-0.2, follow:'fire'});
+    if (pantry){ const s = pantry.x<10 ? 1 : -1; mk('add-ext-2','ext','ext',{x:pantry.x+s*2.6, y:pantry.y-0.9}); }
+  }
+  if (a.includes('sink') && MJ._sinkAt) mk('add-sink','sink','sink',Object.assign({},MJ._sinkAt));
+  if (a.includes('bbq')){ const z = MJ.tentPlace(MJ.val('tent')); mk('add-bbq','bbq','bbq',{x:z.bbq.x, y:z.bbq.y, r:0}); }
+  if (a.includes('coffee')) mk('add-coffee','coffee','coffee',{x:f.x, y:f.y+R+0.9, r:0, follow:'fire'});
+  if (a.includes('festoon')) mk('add-festoon','festoon','festoon',{x:f.x, y:f.y, w:9, d:9, follow:'fire'});
+  if (a.includes('palms')){ mk('add-palm-1','palm','palms',{x:g.x-3.4, y:2.7}); mk('add-palm-2','palm','palms',{x:g.x+3.4, y:2.7}); }
+  if (a.includes('screen')) mk('add-screen','screen','screen',{x:f.x, y:f.y-R-2.2, r:180, follow:'fire'});
+  if (a.includes('play')) mk('add-play','play','play',{x:g.x<10 ? 3 : 17, y:9});
+};
+
+MJ.zone = mode => {
+  const L = MJ.L, z = MJ.tentPlace(mode||'A-left');
+  const t = put(L,'tent','tent',{x:z.tent.x, y:z.tent.y, r:z.tent.r, w:14, d:6, main:true});
+  put(L,'pantry','pantry',z.pantry); put(L,'acout','acout',z.ac);
+  put(L,'gate','gate',{x:z.gate, y:0, r:0});
+  put(L,'path','path',{x:z.gate, y:z.pathTo/2, d:z.pathTo, r:0, follow:'gate'});
+  if (z.link) put(L,'path2','path',{x:z.link[0], y:z.link[1], d:z.link[2], w:1.5, r:90}); else drop(L, i => i.id==='path2');
+  put(L,'fire','bonfire',{x:z.fire[0], y:z.fire[1]});
+  put(L,'board','board',{x:z.gate+(z.gate<10?-2.6:2.6), y:0.6, r:0, follow:'gate'});
+  t.closed = MJ.autoClosed(t);
+  MJ.tentInterior(L); MJ.wcPlace(L); MJ.genPlace(L); MJ.carsPlace(L); MJ.peoplePlace(L);
+  drop(L, i => !!i.addon); MJ.addonsPlace(L);
+};
+
+/* Apply one answer to the current plan. Returns what the views must redraw. */
+MJ.applyAnswer = k => {
+  const L = MJ.L, v = MJ.val(k);
+  switch (k){
+    case 'front': L.fence.frontClosed = v !== 'open'; return 'fence';
+    case 'gate': { const g = MJ.find('gate'); if (g) g.w = +v || 3; MJ.carsPlace(L); return 'all'; }
+    case 'tent': MJ.zone(v); return 'all';
+    case 'wc': MJ.wcPlace(L); MJ.genPlace(L); MJ.carsPlace(L); MJ.peoplePlace(L); return 'all';
+    case 'power': MJ.genPlace(L); MJ.carsPlace(L); return 'all';
+    case 'lstep': L.lights.every = ({every:1,'2':2,'3':3,corners:0})[v]; if (L.lights.every==null) L.lights.every = 2; return 'fence';
+    case 'lstyle': L.lights.styles = (v && v.length) ? v.slice() : ['lantern']; return 'fence';
+    case 'ac': L.ac = v; return 'all';
+    case 'seats': L.seats = v; return 'all';
+    case 'north': L.north = v==='unsure' ? '' : (v||''); return 'north';
+    case 'addons': MJ.addonsPlace(L); return 'all';
+    case 'inside': MJ.tentInterior(L); return 'all';
+  }
+  return null;
+};
+const ORDER = ['front','gate','tent','wc','power','lstep','lstyle','ac','seats','north','addons','inside'];
+MJ.applyAll = () => { ORDER.forEach(k => { if (k!=='tent' && k!=='wc' && k!=='addons') MJ.applyAnswer(k); }); MJ.zone(MJ.val('tent')); MJ.applyAnswer('gate'); };
+
+MJ.defaultLayout = () => {
+  const L = base(); MJ.L = L;
+  add(L,{id:'gate',t:'gate',x:7.5,y:0,w:3}); add(L,{id:'tent',t:'tent',x:7.5,y:34,main:true});
+  add(L,{id:'path',t:'path',x:7.5,y:15.5,d:31,follow:'gate'}); add(L,{id:'fire',t:'bonfire',x:13,y:20});
+  add(L,{id:'pantry',t:'pantry',x:2.6,y:38.6,r:90}); add(L,{id:'acout',t:'acout',x:8,y:39.25}); add(L,{id:'board',t:'board',x:4.9,y:0.6,follow:'gate'});
+  [[0.35,0.35],[19.65,0.35],[0.35,39.65],[19.65,39.65]].forEach((c,k) => add(L,{id:'c'+(k+1),t:'corner',x:c[0],y:c[1]}));
+  ['k','k','a','k','c','k','a','k'].forEach((s,k) => add(L,{id:'p'+(k+1),t:'person',x:10,y:10,s}));
+  [1,2,3].forEach(k => add(L,{id:'car-'+k,t:'car',x:2+k*4,y:-4.3,r:90,col:k}));
+  MJ.applyAll();
+  return L;
+};
+
+/* Moving and turning: a leader carries its followers (tent interior, things round the fire, walkway with the gate). */
+MJ.moveBy = (it,dx,dy) => {
+  it.x += dx; it.y += dy;
+  if (['tent','fire','gate'].includes(it.id)) MJ.L.items.forEach(i => { if (i.follow===it.id){ i.x += dx; i.y += dy; } });
+};
+MJ.turnBy = (it,dr) => {
+  it.r = (((it.r||0)+dr)%360+360)%360;
+  if (it.id==='tent') MJ.L.items.forEach(i => { if (i.follow==='tent'){ const p=MJ.rot(i.x-it.x,i.y-it.y,dr); i.x=it.x+p[0]; i.y=it.y+p[1]; i.r=(((i.r||0)+dr)%360+360)%360; } });
+};
+
+/* Event bus and undo */
+const subs = []; MJ.on = f => subs.push(f);
+MJ.emit = (kind,id) => subs.forEach(f => { try { f(kind,id); } catch(e){ console.error(e); } });
+const undo = [];
+MJ.snap = () => { undo.push(JSON.stringify(MJ.L)); if (undo.length>40) undo.shift(); };
+MJ.undo = () => { if (!undo.length) return false; MJ.L = JSON.parse(undo.pop()); MJ.emit('all'); MJ.emit('commit'); return true; };
+
+/* Fence poles (every 2 m), lit poles and fabric panels, shared by plan and 3D. */
+MJ.fenceGeom = () => {
+  const L = MJ.L, st = L.fence.step||2, every = L.lights.every, front = L.fence.frontClosed;
+  const g = MJ.find('gate') || {x:7.5,w:3}, g0 = g.x-g.w/2, g1 = g.x+g.w/2, poles = [], segs = [];
+  const side = (x0,y0,x1,y1,isFront) => {
+    const n = Math.round(Math.hypot(x1-x0,y1-y0)/st);
+    for (let k=1;k<n;k++){ const x=x0+(x1-x0)*k/n, y=y0+(y1-y0)*k/n;
+      if (isFront && (!front || (x>g0-0.2 && x<g1+0.2))) continue;
+      poles.push({x,y,lit: every>0 && k%every===0}); }
+  };
+  side(0,40,20,40); side(0,0,0,40); side(20,0,20,40); side(0,0,20,0,true);
+  [[0,0],[20,0],[0,40],[20,40]].forEach(c => poles.push({x:c[0],y:c[1],corner:true}));
+  poles.push({x:g0,y:0,gate:true,lit:true},{x:g1,y:0,gate:true,lit:true});
+  segs.push([0,40,20,40],[0,0,0,40],[20,0,20,40]);
+  if (front){ if (g0>0.05) segs.push([0,0,g0,0]); if (g1<19.95) segs.push([g1,0,20,0]); }
+  return {poles, segs, g0, g1};
+};
+})();
+
+</script>
+<script>
+/* plan.js */
+/* Outdoor Majlis - 2D plan editor (SVG, metres). Entrance at the bottom. */
+(function(){
+'use strict';
+const MJ = window.MJ, NS = 'http://www.w3.org/2000/svg';
+let svg, gG, gCab, gF, gI, gL, gS, sel = null, snapOn = true, showCab = false, nodes = {};
+const SY = y => 40 - y;
+const E = (t,a,p) => { const e = document.createElementNS(NS,t); for (const k in a) if (a[k]!=null) e.setAttribute(k,a[k]); if (p) p.appendChild(e); return e; };
+const fmt = v => (Math.round(v*10)/10).toFixed(1).replace(/\.0$/,'') + ' m';
+const FILL = {toilets:'#dfe6ec', pantry:'#d8c196', acout:'#b8bdc3', board:'#7f878f', car:'#a3abb4', bbq:'#3b3b3b', coffee:'var(--wood)',
+  sink:'#e9eef2', ext:'#d1281f', screen:'#f4f4f4', play:'#86c9a6', gen:'#4d6b50', bench:'var(--wood)', tv:'#151515', speaker:'#262626', table:'var(--wood)', seat:'var(--seat)'};
+const LABEL = {tent:'Tent', bonfire:'Fire', toilets:'2 toilets', septic:'Sewage tank', water:'Water tank', pantry:'Pantry', acout:'AC',
+  board:'Power', gate:'Gate', play:'Kids', screen:'Screen', bbq:'BBQ', coffee:'Coffee', gen:'Generator'};
+const PERSON = {k:['#f4f2ec','#555'], a:['#17171b','#000'], c:['#3d6fa8','#223']};
+const xf = it => `translate(${it.x} ${SY(it.y)}) rotate(${-(it.r||0)}) scale(1 -1)`;
+
+function shape(g,it){
+  const w=+it.w, d=+it.d, hw=w/2, hd=d/2;
+  const R = (x,y,ww,hh,fill,cls,ex) => E('rect',Object.assign({x,y,width:ww,height:hh,fill,'class':cls||null},ex||{}),g);
+  const C = (cx,cy,r,fill,ex) => E('circle',Object.assign({cx,cy,r,fill},ex||{}),g);
+  switch (it.t){
+    case 'tent': {
+      R(-hw,-hd,w,d,'var(--tentfill)','sh'); R(-hw+0.25,-hd+0.25,w-0.5,d-0.5,'rgba(142,42,53,.13)');
+      const cl = it.closed||[], S = {front:[-hw,-hd,hw,-hd], back:[-hw,hd,hw,hd], left:[-hw,-hd,-hw,hd], right:[hw,-hd,hw,hd]};
+      for (const s in S){ const c=S[s], on=cl.includes(s); E('line',{x1:c[0],y1:c[1],x2:c[2],y2:c[3],stroke:'var(--tentline)','stroke-width':on?0.24:0.09,'stroke-dasharray':on?null:'0.5 0.35'},g); }
+      E('line',{x1:-hw,y1:0,x2:hw,y2:0,stroke:'var(--tentline)','stroke-width':0.04,'stroke-dasharray':'0.2 0.2'},g);
+      if (it.pantrySide && S[it.pantrySide]){ const c = S[it.pantrySide], a = it.pantryDoor||0, alongX = c[1]===c[3];
+        const p0 = alongX ? [a-0.5,c[1]] : [c[0],a-0.5], p1 = alongX ? [a+0.5,c[1]] : [c[0],a+0.5];
+        E('line',{x1:p0[0],y1:p0[1],x2:p1[0],y2:p1[1],stroke:'var(--wood)','stroke-width':0.3},g); }
+      break; }
+    case 'chair': R(-hw,-hd,w,d,'var(--seat)','sh',{rx:0.12}); R(-hw,hd-0.18,w,0.18,'var(--wood)'); break;
+    case 'seat': R(-hw,-hd,w,d,'var(--seat)','sh',{rx:0.08}); R(-hw,hd-0.26,w,0.26,'rgba(0,0,0,.28)'); break;
+    case 'bonfire': {
+      const r = Math.min(hw,hd);
+      C(0,0,r,'rgba(122,59,18,.10)',{stroke:'#8a4515','stroke-width':0.07,'stroke-dasharray':'0.4 0.25','class':'sh'});
+      for (let k=0;k<8;k++){ const a=k/8*Math.PI*2; E('rect',{x:-0.55,y:-0.3,width:1.1,height:0.6,rx:0.12,fill:'var(--seat)',
+        transform:`translate(${(Math.cos(a)*(r-0.5)).toFixed(3)} ${(Math.sin(a)*(r-0.5)).toFixed(3)}) rotate(${(a*180/Math.PI+90).toFixed(1)})`},g); }
+      C(0,0,0.68,'#6b6259'); C(0,0,0.46,'#e0571b'); C(0,0,0.22,'#ffc23d'); break; }
+    case 'path':
+      R(-hw,-hd,w,d,'var(--gravel)','sh');
+      for (let y=-hd+1; y<=hd-0.5; y+=4){ C(-hw-0.2,y,0.13,'var(--lamp)'); C(hw+0.2,y,0.13,'var(--lamp)'); } break;
+    case 'toilets':
+      R(-hw,-hd,w,d,FILL.toilets,'sh'); E('line',{x1:0,y1:-hd,x2:0,y2:hd,stroke:'#7b8791','stroke-width':0.06},g);
+      R(-hw/2-0.4,-hd-0.05,0.8,0.12,'#5a3d26'); R(hw/2-0.4,-hd-0.05,0.8,0.12,'#5a3d26'); break;
+    case 'septic': case 'water': {
+      const col = it.t==='water' ? 'var(--water)' : 'var(--sewage)';
+      R(-hw,-hd,w,d,col,'sh',{'fill-opacity':0.18,stroke:col,'stroke-width':0.08,'stroke-dasharray':'0.3 0.2'}); C(0,0,0.32,'none',{stroke:col,'stroke-width':0.08}); break; }
+    case 'pantry': {
+      R(-hw,-hd,w,d,FILL.pantry,'sh');
+      (it.doors || ['front']).forEach(s => { if (s==='front') R(-0.45,-hd-0.06,0.9,0.14,'#5a3d26'); else if (s==='back') R(-0.45,hd-0.08,0.9,0.14,'#5a3d26');
+        else if (s==='right') R(hw-0.08,-0.45,0.14,0.9,'#5a3d26'); else R(-hw-0.06,-0.45,0.14,0.9,'#5a3d26'); });
+      E('line',{x1:-hw+0.35,y1:hd-0.35,x2:hw-0.35,y2:hd-0.35,stroke:'#8a6d43','stroke-width':0.08},g); break; }
+    case 'acout': R(-hw,-hd,w,d,FILL.acout,'sh'); C(-w/4,0,0.24,'#59606a'); C(w/4,0,0.24,'#59606a'); break;
+    case 'corner': case 'lantern':
+      C(0,0,it.t==='corner'?0.9:0.55,'var(--lamp)',{'fill-opacity':0.22}); C(0,0,0.2,'var(--lamp)',{stroke:'var(--fence)','stroke-width':0.05,'class':'sh'}); break;
+    case 'person': {
+      const pc = PERSON[it.s]||PERSON.k;
+      E('ellipse',{rx:0.27,ry:0.16,fill:pc[0],stroke:pc[1],'stroke-width':0.04,'class':'sh'},g); C(0,0.02,0.11,'#b98461'); C(0,-0.19,0.05,pc[1]); break; }
+    case 'car':
+      R(-hw,-hd,w,d,['#c9ced4','#e9ebee','#2b2e33','#8a96a3'][(it.col||0)%4],'sh',{rx:0.35});
+      R(hw*0.12,-hd+0.18,w*0.18,d-0.36,'#38414b',null,{rx:0.12}); R(-hw*0.62,-hd+0.2,w*0.14,d-0.4,'#38414b',null,{rx:0.1}); break;
+    case 'gate': {
+      R(-hw,-0.7,w,1.4,'rgba(0,0,0,0.001)','sh');
+      const a = 62*Math.PI/180, L2 = hw;
+      E('line',{x1:-hw,y1:0,x2:(-hw+Math.cos(a)*L2).toFixed(3),y2:(Math.sin(a)*L2).toFixed(3),stroke:'var(--fence)','stroke-width':0.1},g);
+      E('line',{x1:hw,y1:0,x2:(hw-Math.cos(a)*L2).toFixed(3),y2:(Math.sin(a)*L2).toFixed(3),stroke:'var(--fence)','stroke-width':0.1},g);
+      R(-hw-0.15,-0.15,0.3,0.3,'var(--fence)'); R(hw-0.15,-0.15,0.3,0.3,'var(--fence)'); break; }
+    case 'festoon': {
+      R(-hw,-hd,w,d,'none','sh',{stroke:'var(--lamp)','stroke-width':0.06,'stroke-dasharray':'0.15 0.15'});
+      const pts = []; for (let k=0;k<=6;k++){ pts.push(`${(k%2?hw:-hw)},${(-hd+k*d/6).toFixed(2)}`); }
+      E('polyline',{points:pts.join(' '),fill:'none',stroke:'var(--lamp)','stroke-width':0.06},g); break; }
+    case 'palm': {
+      const r = Math.min(hw,hd), p = [];
+      for (let k=0;k<16;k++){ const a=k/16*Math.PI*2, rr = k%2 ? r*0.35 : r; p.push(`${(Math.cos(a)*rr).toFixed(2)},${(Math.sin(a)*rr).toFixed(2)}`); }
+      E('polygon',{points:p.join(' '),fill:'#4f8a3c','fill-opacity':0.85,'class':'sh'},g); C(0,0,0.22,'#7a5a3a'); break; }
+    case 'ext': C(0,0,0.2,FILL.ext,{'class':'sh'}); break;
+    case 'play': R(-hw,-hd,w,d,FILL.play,'sh',{'fill-opacity':0.7,rx:0.4}); break;
+    default: R(-hw,-hd,w,d,FILL[it.t]||'#999','sh',{rx:Math.min(0.08,hw,hd)});
+  }
+}
+
+function T(x,y,txt,anchor,cls,p){ const t = E('text',{x,y,'text-anchor':anchor||'middle','class':cls||'pl-txt'},p||gG); t.textContent = txt; return t; }
+function drawGround(){
+  gG.innerHTML = '';
+  E('rect',{x:-3,y:-3.5,width:26,height:52,'class':'pl-out'},gG);
+  E('rect',{x:0,y:0,width:20,height:40,'class':'pl-plot'},gG);
+  for (let x=1;x<20;x++) E('line',{x1:x,y1:0,x2:x,y2:40,'class':x%5?'pl-grid':'pl-grid5'},gG);
+  for (let y=1;y<40;y++) E('line',{x1:0,y1:y,x2:20,y2:y,'class':y%5?'pl-grid':'pl-grid5'},gG);
+  T(10,-1.4,'Back · 20 m'); const v = T(-1.6,20,'40 m'); v.setAttribute('transform','rotate(-90 -1.6 20)');
+  T(10,41.5,'Entrance side'); T(10,47.7,'Outside · parking');
+  const n = MJ.L.north;
+  if (n){
+    const ang = {front:180, back:0, left:-90, right:90, 'back-right':45, 'back-left':-45, 'front-right':135, 'front-left':-135}[n] || 0, g = E('g',{transform:`translate(21.6 44.6) rotate(${ang})`},gG);
+    E('polygon',{points:'0,-1.1 0.45,0.5 0,0.15 -0.45,0.5',fill:'var(--ink)'},g);
+    const t = E('text',{x:0,y:-1.35,'text-anchor':'middle','class':'pl-lbl',transform:`rotate(${-ang} 0 -1.6)`},g); t.textContent = 'N';
+  }
+}
+function drawFence(){
+  gF.innerHTML = '';
+  const fg = MJ.fenceGeom();
+  fg.segs.forEach(s => E('line',{x1:s[0],y1:SY(s[1]),x2:s[2],y2:SY(s[3]),'class':'pl-fence'},gF));
+  if (!MJ.L.fence.frontClosed) E('line',{x1:0,y1:40,x2:20,y2:40,'class':'pl-open'},gF);
+  fg.poles.forEach(p => { const lit = p.lit||p.gate; E('circle',{cx:p.x,cy:SY(p.y),r:lit?0.21:0.13,'class':lit?'pl-polelit':'pl-pole'},gF); });
+}
+function drawItems(){
+  gI.innerHTML = ''; gL.innerHTML = ''; nodes = {};
+  const order = it => ({septic:0,water:0,path:1,play:1,festoon:9,person:8,lantern:7})[it.t] ?? 5;
+  MJ.L.items.slice().sort((a,b) => order(a)-order(b)).forEach(it => {
+    const g = E('g',{'class':'it'+(it.id===sel?' sel':''),'data-id':it.id,transform:xf(it)},gI);
+    E('title',{},g).textContent = (MJ.CAT[it.t]||{}).n || it.t;
+    shape(g,it);
+    let l = null;
+    if (LABEL[it.t]){ l = E('text',{x:it.x,y:SY(it.y)+0.22,'text-anchor':'middle','class':'pl-lbl'},gL); l.textContent = LABEL[it.t]; }
+    nodes[it.id] = {g,l};
+  });
+}
+function setXf(it){ const n = nodes[it.id]; if (!n) return; n.g.setAttribute('transform',xf(it)); if (n.l){ n.l.setAttribute('x',it.x); n.l.setAttribute('y',SY(it.y)+0.22); } }
+
+function drawCables(){
+  gCab.innerHTML = ''; const btn = document.getElementById('cabBtn');
+  if (!showCab){ btn.textContent = 'Cables'; return; }
+  const ins = 0.35; let len = 2*((20-2*ins)+(40-2*ins));
+  E('polyline',{points:`${ins},${SY(ins)} ${20-ins},${SY(ins)} ${20-ins},${SY(40-ins)} ${ins},${SY(40-ins)} ${ins},${SY(ins)}`},gCab);
+  const powered = ['tent','pantry','toilets','acout','water','bbq','coffee','screen','festoon','palm','gen','speaker','board','play','bonfire'];
+  MJ.L.items.forEach(it => {
+    if (it.t==='path'){ const b = MJ.aabb(it), x = b[2]+0.2, y0 = Math.max(b[1],ins); E('line',{x1:x,y1:SY(y0),x2:x,y2:SY(b[3])},gCab); len += b[3]-y0; return; }
+    if (!powered.includes(it.t) || it.follow==='tent') return;
+    const cx = it.x, cy = it.y;
+    if (cx<0 || cx>20 || cy<0 || cy>40){ const ty = cy<0 ? ins : 40-ins; E('line',{x1:cx,y1:SY(cy),x2:Math.min(Math.max(cx,ins),20-ins),y2:SY(ty)},gCab); len += Math.abs(cy-ty); return; }
+    const c = [[cx-ins,ins,cy],[20-ins-cx,20-ins,cy],[cy-ins,cx,ins],[40-ins-cy,cx,40-ins]].sort((a,b) => a[0]-b[0])[0];
+    E('line',{x1:cx,y1:SY(cy),x2:c[1],y2:SY(c[2])},gCab); len += c[0];
+  });
+  btn.textContent = 'Cables · ' + Math.round(len) + ' m';
+}
+function dim(g,x1,y1,x2,y2){
+  const len = Math.hypot(x2-x1,y2-y1); if (len<0.05) return;
+  E('line',{x1,y1:SY(y1),x2,y2:SY(y2)},g);
+  const hor = y1===y2, t = E('text',{x:(x1+x2)/2+(hor?0:0.25),y:SY((y1+y2)/2)+(hor?-0.22:0.2),'text-anchor':hor?'middle':'start'},g);
+  t.textContent = fmt(len);
+}
+function drawSel(){
+  gS.innerHTML = '';
+  const it = sel && MJ.find(sel); if (!it) return;
+  const b = MJ.aabb(it);
+  E('rect',{x:b[0]-0.12,y:SY(b[3])-0.12,width:b[2]-b[0]+0.24,height:b[3]-b[1]+0.24,fill:'none',stroke:'var(--sel)','stroke-width':0.07,'stroke-dasharray':'0.25 0.15'},gS);
+  if (b[0]<-0.01 || b[2]>20.01 || b[1]<-0.01 || b[3]>40.01) return;
+  const g = E('g',{'class':'dim'},gS), cx = (b[0]+b[2])/2, cy = (b[1]+b[3])/2;
+  dim(g,0,cy,b[0],cy); dim(g,b[2],cy,20,cy); dim(g,cx,0,cx,b[1]); dim(g,cx,b[3],cx,40);
+}
+
+const bar = () => document.getElementById('selbar');
+function updateSelBar(){
+  const it = sel && MJ.find(sel), b = bar(); b.hidden = !it; if (!it) return;
+  document.getElementById('selName').textContent = (MJ.CAT[it.t]||{}).n || it.t;
+  const w = document.getElementById('selW'), d = document.getElementById('selD');
+  w.value = (+it.w).toFixed(1); d.value = (+it.d).toFixed(1);
+  w.disabled = it.t==='person'; d.disabled = ['person','gate'].includes(it.t) || !!(MJ.CAT[it.t]||{}).round;
+}
+function select(id){
+  sel = id && MJ.find(id) ? id : null;
+  gI.querySelectorAll('.it').forEach(n => n.classList.toggle('sel', n.getAttribute('data-id')===sel));
+  drawSel(); updateSelBar(); MJ.emit('select', sel);
+}
+MJ.plan = {select, get sel(){ return sel; }};
+
+function svgPt(e){ const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return {x:q.x, y:40-q.y}; }
+function act(a){
+  const it = sel && MJ.find(sel); if (!it) return;
+  if (a==='done'){ select(null); return; }
+  MJ.snap();
+  const st = 0.25, gate = it.t==='gate';
+  if (a==='rl' && !gate) MJ.turnBy(it,15); else if (a==='rr' && !gate) MJ.turnBy(it,-15); else if (a==='r90' && !gate) MJ.turnBy(it,-90);
+  else if (a==='u' && !gate) MJ.moveBy(it,0,st); else if (a==='d' && !gate) MJ.moveBy(it,0,-st);
+  else if (a==='l') MJ.moveBy(it,gate ? Math.max(-st, it.w/2-it.x) : -st,0); else if (a==='r') MJ.moveBy(it,gate ? Math.min(st, 20-it.w/2-it.x) : st,0);
+  else if (a==='dup' && !['gate','tent'].includes(it.t)){ const c = MJ.clone(it); c.id = MJ.uid(it.t); delete c.follow; delete c.addon; c.x += 1; c.y += 1; MJ.addItem(c); MJ.emit('all'); select(c.id); MJ.emit('commit'); return; }
+  else if (a==='del'){ if (it.t==='gate') return; MJ.L.items = MJ.L.items.filter(i => i.id!==it.id && !(it.id==='tent' && i.follow==='tent')); sel = null; MJ.emit('all'); updateSelBar(); MJ.emit('commit'); return; }
+  else return;
+  MJ.emit('move', it.id); MJ.emit('moved', it.id); MJ.emit('commit');
+}
+function resize(){
+  const it = sel && MJ.find(sel); if (!it) return;
+  const w = Math.max(0.2, Math.min(40, +document.getElementById('selW').value || it.w)), d = Math.max(0.2, Math.min(40, +document.getElementById('selD').value || it.d));
+  MJ.snap(); it.w = w; it.d = (MJ.CAT[it.t]||{}).round ? w : d;
+  if (it.t==='gate'){ it.x = Math.max(it.w/2, Math.min(20-it.w/2, it.x)); }
+  if (it.id==='tent' || it.id==='pantry') MJ.syncTent();
+  MJ.emit('all'); MJ.emit('commit');
+}
+
+function init(){
+  svg = document.getElementById('plan');
+  svg.setAttribute('viewBox','-3 -3.5 26 52'); svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  gG = E('g',{},svg); gCab = E('g',{'class':'cab'},svg); gF = E('g',{},svg); gI = E('g',{},svg); gL = E('g',{},svg); gS = E('g',{},svg);
+  let drag = null, pend = null;
+  svg.addEventListener('pointerdown', e => {
+    if (e.button>0) return;
+    const g = e.target.closest('[data-id]'), id = g && g.getAttribute('data-id');
+    if (id && !MJ.readOnly && (e.pointerType!=='touch' || id===sel)){
+      const it = MJ.find(id); if (!it) return; const p = svgPt(e);
+      drag = {id, ox:it.x-p.x, oy:it.y-p.y, moved:false, pid:e.pointerId, sx:e.clientX, sy:e.clientY};
+      try { svg.setPointerCapture(e.pointerId); } catch(_){}
+      if (sel!==id) select(id); e.preventDefault(); return;
+    }
+    pend = {id, x:e.clientX, y:e.clientY};
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId!==drag.pid) return;
+    if (!drag.moved && Math.hypot(e.clientX-drag.sx, e.clientY-drag.sy)<3) return;
+    const it = MJ.find(drag.id); if (!it) return;
+    if (!drag.moved){ MJ.snap(); drag.moved = true; }
+    const p = svgPt(e); let nx = p.x+drag.ox, ny = p.y+drag.oy;
+    if (snapOn){ nx = Math.round(nx*4)/4; ny = Math.round(ny*4)/4; }
+    if (it.t==='gate'){ ny = 0; nx = Math.max(it.w/2, Math.min(20-it.w/2, nx)); }
+    nx = Math.max(-2.8, Math.min(22.8, nx)); ny = Math.max(-8.3, Math.min(43.3, ny));
+    const dx = nx-it.x, dy = ny-it.y; if (!dx && !dy) return;
+    MJ.moveBy(it,dx,dy); MJ.emit('move', it.id);
+  });
+  const end = () => { if (drag){ const m = drag.moved, id = drag.id; drag = null; if (m){ MJ.emit('moved', id); MJ.emit('commit'); } } };
+  svg.addEventListener('pointerup', e => { end(); if (pend){ if (Math.hypot(e.clientX-pend.x, e.clientY-pend.y)<8) select(pend.id||null); pend = null; } });
+  svg.addEventListener('pointercancel', () => { end(); pend = null; });
+  svg.addEventListener('touchstart', e => { if (!sel || e.touches.length!==1) return; const g = e.target.closest && e.target.closest('[data-id]'); if (g && g.getAttribute('data-id')===sel) e.preventDefault(); }, {passive:false});
+
+  document.getElementById('selbar').addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) act(b.dataset.act); });
+  ['selW','selD'].forEach(id => document.getElementById(id).addEventListener('change', resize));
+  document.getElementById('undoBtn').addEventListener('click', () => { if (!MJ.undo()) MJ.toast('Nothing to undo'); else { sel = null; updateSelBar(); } });
+  let resetArm = 0; const rb = document.getElementById('resetBtn');
+  rb.addEventListener('click', () => {
+    if (Date.now()-resetArm>3000){ resetArm = Date.now(); rb.textContent = 'Tap again to reset'; setTimeout(() => { rb.textContent = 'Reset plan'; }, 3000); return; }
+    resetArm = 0; rb.textContent = 'Reset plan'; MJ.snap(); MJ.defaultLayout(); sel = null; MJ.emit('all'); MJ.emit('commit'); MJ.toast('Plan reset to your answers');
+  });
+  const cb = document.getElementById('cabBtn');
+  cb.addEventListener('click', () => { showCab = !showCab; cb.setAttribute('aria-pressed', showCab); drawCables(); });
+  const sb = document.getElementById('snapBtn');
+  sb.addEventListener('click', () => { snapOn = !snapOn; sb.setAttribute('aria-pressed', snapOn); });
+  const menu = document.getElementById('addMenu'), ab = document.getElementById('addBtn');
+  MJ.ADDABLE.forEach(t => { const b = document.createElement('button'); b.className = 'btn'; b.textContent = MJ.CAT[t].n; b.addEventListener('click', () => {
+    MJ.snap(); const it = MJ.addItem({t, x:10, y:20, r:0, s: t==='person' ? ['k','a','c'][Math.floor(Math.random()*3)] : undefined, col: t==='car' ? Math.floor(Math.random()*4) : undefined});
+    if (t==='car'){ it.y = -4.3; it.r = 90; }
+    menu.hidden = true; ab.setAttribute('aria-expanded','false'); MJ.emit('all'); select(it.id); MJ.emit('commit'); MJ.toast('Added. Drag it into place.'); }); menu.appendChild(b); });
+  ab.addEventListener('click', () => { menu.hidden = !menu.hidden; ab.setAttribute('aria-expanded', String(!menu.hidden)); });
+  document.addEventListener('keydown', e => { if (e.key==='Escape'){ menu.hidden = true; select(null); } });
+
+  MJ.on((k,id) => {
+    if (k==='all' || k==='north'){ drawGround(); drawFence(); drawItems(); drawCables(); if (sel && !MJ.find(sel)) sel = null; drawSel(); updateSelBar(); }
+    else if (k==='fence') drawFence();
+    else if (k==='move'){ const it = MJ.find(id); if (!it) return; setXf(it); MJ.L.items.forEach(i => { if (i.follow===id) setXf(i); }); if (it.t==='gate') drawFence(); drawSel(); updateSelBar(); }
+    else if (k==='moved'){ if ((id==='tent' || id==='pantry') && MJ.syncTent()) MJ.emit('all'); else drawCables(); }
+  });
+  drawGround(); drawFence(); drawItems(); drawCables();
+}
+MJ.planInit = init;
+})();
+
+</script>
+<script>
+/* v3d_core.js */
+/* Outdoor Majlis - 3D view core: renderer, sky, ground, fence, camera, walk-through. three.js r160 (global THREE). */
+(function(){
+'use strict';
+const MJ = window.MJ, V = MJ.v3d = {anim:[], lights:[]};
+let T, renderer, scene, camera, canvas, hemi, dir, skyMat, stars, moon, fenceG, itemsG, selG, clock, labelsEl, capEl;
+let night = true, autoTurn = true, labelsOn = true, tour = null, anim = null, fenceTimer = 0;
+const items = {}, labels = {};
+const TX = x => x - 10, TZ = y => 20 - y;
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+V.TX = TX; V.TZ = TZ;
+const M = V.M = {}, TEX = V.TEX = {};
+
+function cTex(w,h,draw,clampEdge){
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'),w,h);
+  const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
+  t.wrapS = t.wrapT = clampEdge ? T.ClampToEdgeWrapping : T.RepeatWrapping; return t;
+}
+function speck(g,w,h,n,cols){ for (let i=0;i<n;i++){ g.fillStyle = cols[i%cols.length]; g.fillRect(Math.random()*w, Math.random()*h, 1+Math.random()*2, 1+Math.random()*2); } }
+function band(g,w,y,hh,c){ // sadu-style band: dark ground, two alternating triangle colours
+  c = c || ['#2d1a12','#e9dcc0','#a52a1e'];
+  g.fillStyle = c[0]; g.fillRect(0,y,w,hh);
+  const s = hh*0.8;
+  for (let x=0;x<w;x+=s){ g.fillStyle = (x/s)%2 ? c[1] : c[2]; g.beginPath(); g.moveTo(x,y+hh*0.9); g.lineTo(x+s/2,y+hh*0.1); g.lineTo(x+s,y+hh*0.9); g.fill(); }
+}
+function makeTextures(){
+  TEX.glow = cTex(128,128,(g) => { const r = g.createRadialGradient(64,64,0,64,64,64); r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(0.22,'rgba(255,255,255,.5)'); r.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0,0,128,128); }, true);
+  TEX.up = cTex(32,128,(g) => { const r = g.createLinearGradient(0,128,0,0); r.addColorStop(0,'rgba(255,255,255,.95)'); r.addColorStop(0.5,'rgba(255,255,255,.25)'); r.addColorStop(1,'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0,0,32,128); }, true);
+  TEX.sand = cTex(256,256,(g,w,h) => { g.fillStyle = '#d8bd8c'; g.fillRect(0,0,w,h); speck(g,w,h,9000,['rgba(140,100,55,.10)','rgba(255,244,220,.14)']);
+    g.strokeStyle = 'rgba(130,92,50,.10)'; g.lineWidth = 2; for (let y=0;y<h;y+=16){ g.beginPath(); for (let x=0;x<=w;x+=8) g.lineTo(x, y+Math.sin(x*0.045+y)*3); g.stroke(); } });
+  TEX.fabric = cTex(256,256,(g,w,h) => { g.fillStyle = '#ddc8a0'; g.fillRect(0,0,w,h);
+    g.fillStyle = 'rgba(90,60,25,.07)'; for (let y=0;y<h;y+=3) g.fillRect(0,y,w,1); for (let x=0;x<w;x+=3) g.fillRect(x,0,1,h);
+    band(g,w,6,20); band(g,w,h-28,20); g.fillStyle = '#3a2416'; g.fillRect(0,0,w,4); g.fillRect(0,h-5,w,5); });
+  TEX.canvas = cTex(256,256,(g,w,h) => { g.fillStyle = '#efe4cc'; g.fillRect(0,0,w,h); speck(g,w,h,2500,['rgba(120,90,50,.06)']);
+    g.fillStyle = 'rgba(120,85,45,.18)'; for (let x=0;x<w;x+=64) g.fillRect(x,0,2,h); });
+  TEX.sadu = cTex(256,256,(g,w,h) => { const H = ['#5e3b1e','#f1eadc','#b07a3c']; g.fillStyle = '#efe7d8'; g.fillRect(0,0,w,h); band(g,w,10,34,H); band(g,w,h-46,34,H);
+    g.fillStyle = '#8a5a2c'; g.fillRect(0,60,w,6); g.fillRect(0,h-68,w,6);
+    for (let x=0;x<w;x+=32){ g.fillStyle = '#b07a3c'; g.beginPath(); g.moveTo(x+16,92); g.lineTo(x+29,128); g.lineTo(x+16,164); g.lineTo(x+3,128); g.fill(); g.fillStyle = '#5e3b1e'; g.fillRect(x+13,122,6,12); } });
+  TEX.carpet = cTex(256,256,(g,w,h) => { g.fillStyle = '#cdb893'; g.fillRect(0,0,w,h); g.strokeStyle = '#8a5a2c'; g.lineWidth = 8; g.strokeRect(10,10,w-20,h-20);
+    g.strokeStyle = '#efe8da'; g.lineWidth = 5; g.strokeRect(28,28,w-56,h-56);
+    g.fillStyle = '#8a5a2c'; g.beginPath(); g.moveTo(128,64); g.lineTo(192,128); g.lineTo(128,192); g.lineTo(64,128); g.fill();
+    g.fillStyle = '#efe8da'; g.beginPath(); g.moveTo(128,92); g.lineTo(164,128); g.lineTo(128,164); g.lineTo(92,128); g.fill(); speck(g,w,h,2000,['rgba(80,50,20,.08)']); });
+  TEX.gravel = cTex(128,128,(g,w,h) => { g.fillStyle = '#cbbfa8'; g.fillRect(0,0,w,h); speck(g,w,h,2600,['#9c907b','#e6dccb','#b2a58d']); });
+  TEX.sand.repeat.set(300,300);
+}
+function mat(o){ return new T.MeshStandardMaterial(Object.assign({roughness:0.85, metalness:0}, o)); }
+function makeMaterials(){
+  M.sandBig = mat({map:TEX.sand, roughness:1, color:0xffffff});
+  const plotTex = TEX.sand.clone(); plotTex.repeat.set(5,10); plotTex.needsUpdate = true; M.plot = mat({map:plotTex, roughness:1, color:0xfff3e0});
+  M.dune = mat({color:0xcfae78, roughness:1});
+  M.steel = mat({color:0x2a2622, roughness:0.6, metalness:0.5}); M.fabric = mat({map:TEX.fabric, side:T.DoubleSide, roughness:0.95});
+  M.canvas = mat({map:TEX.canvas, side:T.DoubleSide, roughness:0.9}); M.sadu = mat({map:TEX.sadu, roughness:0.9});
+  M.carpet = mat({map:TEX.carpet, roughness:1}); M.gravel = mat({map:TEX.gravel, roughness:1});
+  M.lamp = mat({color:0x3a2a10, emissive:0xffb54d, emissiveIntensity:3}); M.bulb = new T.MeshBasicMaterial({color:0xffd9a0});
+  M.pool = new T.MeshBasicMaterial({map:TEX.glow, color:0xff9f45, transparent:true, opacity:0.5, blending:T.AdditiveBlending, depthWrite:false, toneMapped:false, polygonOffset:true, polygonOffsetFactor:-2});
+  M.wash = new T.MeshBasicMaterial({map:TEX.up, color:0xffa050, transparent:true, opacity:0.55, blending:T.AdditiveBlending, depthWrite:false, side:T.DoubleSide, toneMapped:false});
+  M.glow = new T.SpriteMaterial({map:TEX.glow, color:0xffb766, transparent:true, opacity:0.9, blending:T.AdditiveBlending, depthWrite:false, toneMapped:false});
+  M.wood = mat({color:0x8a5a2c, roughness:0.55}); M.white = mat({color:0xeeeeea, roughness:0.7}); M.panel = mat({color:0xe7e2d6, roughness:0.75});
+  M.cushion = mat({color:0xefe8da, roughness:0.95}); M.cushion2 = mat({color:0xe2d8c6, roughness:0.95}); M.gold = mat({color:0xc9a24a, roughness:0.4, metalness:0.6});
+  M.metal = mat({color:0x9aa1a8, roughness:0.45, metalness:0.6}); M.dark = mat({color:0x22252a, roughness:0.6});
+  M.glass = mat({color:0x1d2a36, roughness:0.15, metalness:0.3}); M.skin = mat({color:0xb07a55, roughness:0.7});
+  M.robeW = mat({color:0xf3f1ea, roughness:0.85}); M.robeB = mat({color:0x15151a, roughness:0.8}); M.shirt = mat({color:0x3c6ea6}); M.jeans = mat({color:0x2a3446});
+  M.leaf = mat({color:0x3f6d2e, roughness:0.9, side:T.DoubleSide}); M.trunk = mat({color:0x7a5a3c, roughness:1});
+  M.red = mat({color:0xc8241c, roughness:0.5}); M.stone = mat({color:0x6d655c, roughness:1}); M.ember = new T.MeshBasicMaterial({color:0xff6a1a});
+  M.flameA = new T.MeshBasicMaterial({color:0xff7a1c, transparent:true, opacity:0.85, blending:T.AdditiveBlending, depthWrite:false});
+  M.flameB = new T.MeshBasicMaterial({color:0xffd060, transparent:true, opacity:0.9, blending:T.AdditiveBlending, depthWrite:false});
+  M.under = new T.MeshBasicMaterial({color:0x3a3024, transparent:true, opacity:0.28, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-1});
+  M.screen = new T.MeshStandardMaterial({color:0xf5f5f5, emissive:0x8fb0ff, emissiveIntensity:0.15}); M.rubber = mat({color:0x4f9e78, roughness:1});
+  M.line = new T.LineBasicMaterial({color:0x1d1a16}); M.sel = new T.LineBasicMaterial({color:0x4aa0ff});
+}
+
+/* small builders shared with the item file */
+V.box = (w,h,d,m,x,y,z,p,sh=true) => { const o = new T.Mesh(new T.BoxGeometry(w,h,d), m); o.position.set(x,y,z); o.castShadow = sh; o.receiveShadow = true; if (p) p.add(o); return o; };
+V.cyl = (rt,rb,h,m,x,y,z,p,seg=12) => { const o = new T.Mesh(new T.CylinderGeometry(rt,rb,h,seg), m); o.position.set(x,y,z); o.castShadow = true; o.receiveShadow = true; if (p) p.add(o); return o; };
+V.glowAt = (p,x,y,z,s,color) => { const sp = new T.Sprite(color ? M.glow.clone() : M.glow); if (color) sp.material.color.set(color); sp.position.set(x,y,z); sp.scale.set(s,s,s); sp.userData.night = true; p.add(sp); return sp; };
+V.poolAt = (p,x,z,s,op) => { const m = new T.Mesh(new T.PlaneGeometry(s,s), op!=null ? M.pool.clone() : M.pool); if (op!=null) m.material.opacity = op; m.rotation.x = -Math.PI/2; m.position.set(x,0.03,z); m.userData.night = true; m.renderOrder = 2; p.add(m); return m; };
+V.lightAt = (p,x,y,z,color,cd,dist,prio,flicker) => { const l = new T.PointLight(color, cd, dist, 2); l.position.set(x,y,z); l.userData = {base:cd, prio:prio||1, flicker:!!flicker}; p.add(l); return l; };
+
+function clear(g){ g.traverse(o => { if (o.geometry && !o.geometry.userData.keep) o.geometry.dispose(); }); while (g.children.length) g.remove(g.children[0]); }
+
+function buildEnv(){
+  skyMat = new T.ShaderMaterial({side:T.BackSide, depthWrite:false, fog:false,
+    uniforms:{top:{value:new T.Color()}, mid:{value:new T.Color()}, bot:{value:new T.Color()}},
+    vertexShader:'varying vec3 vp; void main(){ vp = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+    fragmentShader:'uniform vec3 top; uniform vec3 mid; uniform vec3 bot; varying vec3 vp; void main(){ float h = vp.y; vec3 c = h > 0.0 ? mix(mid, top, smoothstep(0.0, 0.6, h)) : mix(mid, bot, smoothstep(0.0, 0.15, -h)); gl_FragColor = vec4(c, 1.0);\n#include <colorspace_fragment>\n}'});
+  scene.add(new T.Mesh(new T.SphereGeometry(600,32,16), skyMat));
+  const n = 900, pos = new Float32Array(n*3);
+  for (let i=0;i<n;i++){ const th = Math.random()*Math.PI*2, y = 0.08+Math.random()*0.92, r = Math.sqrt(1-y*y); pos[i*3] = Math.cos(th)*r*560; pos[i*3+1] = y*560; pos[i*3+2] = Math.sin(th)*r*560; }
+  const sg = new T.BufferGeometry(); sg.setAttribute('position', new T.BufferAttribute(pos,3));
+  stars = new T.Points(sg, new T.PointsMaterial({color:0xffffff, size:1.5, sizeAttenuation:false, transparent:true, opacity:0.8, fog:false, depthWrite:false})); scene.add(stars);
+  moon = new T.Sprite(new T.SpriteMaterial({map:TEX.glow, color:0xe6ecff, fog:false, depthWrite:false, transparent:true})); moon.scale.set(46,46,46); scene.add(moon);
+  const ground = new T.Mesh(new T.PlaneGeometry(1400,1400), M.sandBig); ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+  const plot = new T.Mesh(new T.PlaneGeometry(20,40), M.plot); plot.rotation.x = -Math.PI/2; plot.position.y = 0.006; plot.receiveShadow = true; scene.add(plot);
+  [[-160,-240,90,9,40],[120,-300,140,14,60],[300,-60,70,8,110],[-320,40,120,12,70],[60,320,160,10,50],[-210,260,80,7,60],[260,220,90,9,45]].forEach(d => {
+    const m = new T.Mesh(new T.SphereGeometry(1,28,14), M.dune); m.scale.set(d[2],d[3],d[4]); m.position.set(d[0],-d[3]*0.35,d[1]); m.receiveShadow = true; scene.add(m); });
+}
+
+function northVec(){ const n = MJ.L.north || 'back', h = Math.SQRT1_2; return ({back:[0,-1], front:[0,1], left:[-1,0], right:[1,0], 'back-right':[h,-h], 'back-left':[-h,-h], 'front-right':[h,h], 'front-left':[-h,h]})[n] || [0,-1]; }
+function setNight(on){
+  night = on; const nv = northVec(), south = [-nv[0], -nv[1]], east = [-nv[1], nv[0]];
+  if (on){
+    skyMat.uniforms.top.value.set('#060a1a'); skyMat.uniforms.mid.value.set('#1b2546'); skyMat.uniforms.bot.value.set('#120e0c');
+    scene.fog = new T.Fog(0x141a30, 90, 520); hemi.color.set(0x5b6fa8); hemi.groundColor.set(0x2a1f16); hemi.intensity = 0.75;
+    dir.color.set(0xb6c6ff); dir.intensity = 0.75; renderer.toneMappingExposure = 1.25;
+    const mp = new T.Vector3(south[0]*0.6+east[0]*0.5, 0.75, south[1]*0.6+east[1]*0.5).normalize();
+    dir.position.copy(mp).multiplyScalar(80); moon.position.copy(mp).multiplyScalar(520);
+  } else {
+    skyMat.uniforms.top.value.set('#4f86c6'); skyMat.uniforms.mid.value.set('#d8e4ee'); skyMat.uniforms.bot.value.set('#c9b48e');
+    scene.fog = new T.Fog(0xd5dde4, 140, 700); hemi.color.set(0xdfeaff); hemi.groundColor.set(0x9c8461); hemi.intensity = 1.1;
+    dir.color.set(0xfff0d8); dir.intensity = 2.6; renderer.toneMappingExposure = 1.0;
+    dir.position.set(south[0]*45 - east[0]*30, 70, south[1]*45 - east[1]*30);
+  }
+  stars.visible = on; moon.visible = on;
+  M.lamp.emissiveIntensity = on ? 3 : 0.35; M.bulb.color.set(on ? 0xffd9a0 : 0x9a8f80); M.screen.emissiveIntensity = on ? 0.45 : 0.05;
+  [fenceG, itemsG].forEach(g => g.traverse(o => { if (o.userData && o.userData.night) o.visible = on; }));
+  V.lights.forEach(l => { l.intensity = (on ? 1 : 0.06) * l.userData.base; });
+  const b = document.getElementById('nightBtn'); if (b){ b.textContent = on ? 'Night' : 'Day'; b.setAttribute('aria-pressed', String(on)); }
+}
+V.setNight = setNight;
+
+function buildFence(){
+  clear(fenceG);
+  const fg = MJ.fenceGeom(), st = MJ.L.lights.styles || ['lantern'];
+  const pg = new T.CylinderGeometry(0.045,0.05,2.1,8); pg.translate(0,1.05,0);
+  const im = new T.InstancedMesh(pg, M.steel, fg.poles.length), m4 = new T.Matrix4();
+  fg.poles.forEach((p,i) => { m4.makeTranslation(TX(p.x),0,TZ(p.y)); im.setMatrixAt(i,m4); }); im.castShadow = true; fenceG.add(im);
+  fg.segs.forEach(s => {
+    const len = Math.hypot(s[2]-s[0], s[3]-s[1]); if (len<0.05) return;
+    const geo = new T.PlaneGeometry(len,1.92), uv = geo.attributes.uv; for (let i=0;i<uv.count;i++) uv.setX(i, uv.getX(i)*len/2);
+    const m = new T.Mesh(geo, M.fabric), ang = Math.atan2(s[3]-s[1], s[2]-s[0]);
+    m.position.set(TX((s[0]+s[2])/2), 1.02, TZ((s[1]+s[3])/2)); m.rotation.y = ang; m.castShadow = true; m.receiveShadow = true; fenceG.add(m);
+    const rail = V.box(len,0.035,0.035,M.steel,0,2.0,0,null,false); rail.position.set(m.position.x,2.0,m.position.z); rail.rotation.y = ang; fenceG.add(rail);
+  });
+  const lit = fg.poles.filter(p => p.lit || p.gate);
+  if (lit.length && (st.includes('lantern') || st.includes('rgb'))){
+    const lg = new T.BoxGeometry(0.17,0.26,0.17); lg.translate(0,2.24,0);
+    const li = new T.InstancedMesh(lg, M.lamp, lit.length);
+    lit.forEach((p,i) => { m4.makeTranslation(TX(p.x),0,TZ(p.y)); li.setMatrixAt(i,m4); V.glowAt(fenceG,TX(p.x),2.24,TZ(p.y),1.3); });
+    fenceG.add(li);
+  }
+  lit.forEach(p => {
+    const ix = p.x<0.01 ? 1 : p.x>19.99 ? -1 : 0, iy = p.y<0.01 ? 1 : p.y>39.99 ? -1 : 0;
+    V.poolAt(fenceG, TX(p.x+ix*1.0), TZ(p.y+iy*1.0), st.includes('lantern') || st.includes('rgb') ? 4.2 : 2.4);
+    if (st.includes('uplight')){
+      const w = new T.Mesh(new T.PlaneGeometry(1.5,2.2), M.wash); w.position.set(TX(p.x+ix*0.06), 1.1, TZ(p.y+iy*0.06));
+      w.rotation.y = ix ? Math.PI/2 : 0; w.userData.night = true; fenceG.add(w);
+      V.box(0.12,0.08,0.12,M.lamp,TX(p.x+ix*0.2),0.04,TZ(p.y+iy*0.2),fenceG,false);
+    }
+  });
+  if (st.includes('string')){
+    const bulbs = [], wire = [];
+    fg.segs.forEach(s => {
+      const len = Math.hypot(s[2]-s[0], s[3]-s[1]), n = Math.max(1, Math.round(len/2));
+      for (let k=0;k<n;k++) for (let j=0;j<=8;j++){
+        const t = (k + j/8)/n, x = s[0]+(s[2]-s[0])*t, y = s[1]+(s[3]-s[1])*t, u = j/8, h = 2.05 - 0.18*4*u*(1-u);
+        if (j<8 && j>0) bulbs.push([TX(x),h,TZ(y)]); wire.push(TX(x),h,TZ(y));
+        if (j>0 && j<8) wire.push(TX(x),h,TZ(y));
+      }
+    });
+    const bi = new T.InstancedMesh(new T.SphereGeometry(0.045,6,4), M.bulb, bulbs.length);
+    bulbs.forEach((b,i) => { m4.makeTranslation(b[0],b[1],b[2]); bi.setMatrixAt(i,m4); }); fenceG.add(bi);
+    const wg = new T.BufferGeometry(); wg.setAttribute('position', new T.Float32BufferAttribute(wire,3)); fenceG.add(new T.LineSegments(wg, M.line));
+  }
+  V.rgb = st.includes('rgb');
+  if (!V.rgb) M.lamp.emissive.set(0xffb54d);
+  setNight(night);
+}
+
+/* items: builders live in v3d_items.js (V.make) */
+function place(g,it){ g.position.set(TX(it.x),0,TZ(it.y)); g.rotation.y = (it.r||0)*Math.PI/180; }
+function addItem(it){ const g = V.make(it); if (!g) return; place(g,it); itemsG.add(g); items[it.id] = g; }
+function rebuildItems(){
+  clear(itemsG); for (const k in items) delete items[k]; V.anim = []; V.lights = [];
+  MJ.L.items.forEach(addItem);
+  itemsG.traverse(o => { if (o.isPointLight) V.lights.push(o); });
+  V.lights.sort((a,b) => b.userData.prio - a.userData.prio).forEach((l,i) => { l.visible = i<10; });
+  rebuildLabels(); setNight(night); drawSel();
+}
+function rebuildAll(){ buildFence(); rebuildItems(); }
+
+const LBL = {tent:['Tent',3.9], bonfire:['Fire pit',1.7], toilets:['2 toilets',2.9], septic:['Sewage tank',0.4], water:['Water tank',1.1],
+  pantry:['Pantry',3.0], gate:['Gate',3.1], play:['Kids corner',1.4], screen:['Movie screen',2.9],
+  bbq:['BBQ',1.3], coffee:['Coffee',1.3], gen:['Generator',1.6]};
+function rebuildLabels(){
+  labelsEl.innerHTML = ''; for (const k in labels) delete labels[k];
+  MJ.L.items.forEach(it => {
+    const d = LBL[it.t] || (it.id==='p1' ? ['Person 1.8 m',2.05] : null); if (!d) return;
+    const s = document.createElement('span'); s.textContent = d[0]; labelsEl.appendChild(s); labels[it.id] = {s, h:d[1]};
+  });
+}
+const vtmp = () => new T.Vector3();
+let pv = null;
+function updateLabels(){
+  labelsEl.hidden = !labelsOn; if (!labelsOn) return;
+  const w = canvas.clientWidth, h = canvas.clientHeight; pv = pv || vtmp();
+  for (const id in labels){
+    const it = MJ.find(id), L = labels[id]; if (!it){ L.s.style.display = 'none'; continue; }
+    pv.set(TX(it.x), L.h, TZ(it.y)).project(camera);
+    const on = pv.z<1 && pv.x>-1.1 && pv.x<1.1 && pv.y>-1.1 && pv.y<1.1;
+    L.s.style.display = on ? '' : 'none';
+    if (on){ L.s.style.left = ((pv.x+1)/2*w).toFixed(1)+'px'; L.s.style.top = ((1-pv.y)/2*h).toFixed(1)+'px'; }
+  }
+}
+let selId = null;
+function drawSel(){
+  clear(selG); const it = selId && MJ.find(selId); if (!it) return;
+  const hw = it.w/2+0.1, hd = it.d/2+0.1, p = [[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd],[-hw,-hd]].map(c => new T.Vector3(c[0],0.08,-c[1]));
+  const l = new T.Line(new T.BufferGeometry().setFromPoints(p), M.sel); selG.add(l); place(selG,it);
+}
+
+/* camera: orbit around a target; drag turns, wheel or pinch zooms, right-drag or two fingers pan */
+const ctl = {tx:0, ty:0, tz:-1, r:62, th:0.35, ph:0.92};
+function applyCam(){ const sp = Math.sin(ctl.ph); camera.position.set(ctl.tx+ctl.r*sp*Math.sin(ctl.th), ctl.ty+ctl.r*Math.cos(ctl.ph), ctl.tz+ctl.r*sp*Math.cos(ctl.th)); camera.lookAt(ctl.tx,ctl.ty,ctl.tz); }
+function setAuto(on){ autoTurn = on; const b = document.getElementById('orbitBtn'); if (b) b.setAttribute('aria-pressed', String(on)); }
+function stopTour(){ if (tour){ tour = null; capEl.hidden = true; document.getElementById('tourBtn').textContent = '▶ Walk-through'; } }
+function pan(dx,dy){ const s = ctl.r*0.0017, c = Math.cos(ctl.th), n = Math.sin(ctl.th); ctl.tx -= (dx*c + dy*n)*s; ctl.tz -= (-dx*n + dy*c)*s; ctl.tx = clamp(ctl.tx,-40,40); ctl.tz = clamp(ctl.tz,-50,50); }
+function controls(){
+  const pts = new Map();
+  canvas.addEventListener('pointerdown', e => { try { canvas.setPointerCapture(e.pointerId); } catch(_){} pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); setAuto(false); stopTour(); anim = null; });
+  canvas.addEventListener('pointermove', e => {
+    const p = pts.get(e.pointerId); if (!p) return; const dx = e.clientX-p.x, dy = e.clientY-p.y;
+    if (pts.size===1){ if (e.buttons===2 || e.shiftKey) pan(dx,dy); else { ctl.th -= dx*0.006; ctl.ph = clamp(ctl.ph-dy*0.005, 0.06, 1.53); } }
+    else if (pts.size===2){ const o = [...pts.entries()].find(q => q[0]!==e.pointerId)[1]; const d0 = Math.hypot(p.x-o.x,p.y-o.y), d1 = Math.hypot(e.clientX-o.x,e.clientY-o.y);
+      if (d0>0 && d1>0) ctl.r = clamp(ctl.r*d0/d1, 2, 170); pan(dx/2,dy/2); }
+    p.x = e.clientX; p.y = e.clientY;
+  });
+  const up = e => pts.delete(e.pointerId); canvas.addEventListener('pointerup',up); canvas.addEventListener('pointercancel',up);
+  canvas.addEventListener('wheel', e => { e.preventDefault(); setAuto(false); stopTour(); anim = null; ctl.r = clamp(ctl.r*(1+Math.sign(e.deltaY)*0.08), 2, 170); }, {passive:false});
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+}
+function poseLook(px,py,ph,lx,ly,lh){ // eye in plan metres, look-at point in plan metres
+  const e = new T.Vector3(TX(px),ph,TZ(py)), l = new T.Vector3(TX(lx),lh,TZ(ly)), d = l.clone().sub(e).normalize(), t = e.clone().addScaledVector(d,6);
+  return {tx:t.x, ty:t.y, tz:t.z, r:6, th:Math.atan2(e.x-t.x, e.z-t.z), ph:Math.acos(clamp((e.y-t.y)/6,-1,1))};
+}
+function animateTo(p){
+  const from = Object.assign({}, ctl); let dth = p.th - from.th; dth = Math.atan2(Math.sin(dth), Math.cos(dth));
+  anim = {from, to:Object.assign({}, p, {th:from.th+dth}), t0:performance.now(), dur:1200};
+}
+V.view = name => {
+  stopTour(); setAuto(false);
+  const g = MJ.find('gate')||{x:7.5}, t = MJ.find('tent'), f = MJ.find('fire');
+  let p = {tx:0, ty:0, tz:-1, r:62, th:0.35, ph:0.92};
+  if (name==='top') p = {tx:0, ty:0, tz:0, r:70, th:0, ph:0.02};
+  else if (name==='gate') p = poseLook(g.x,-6.5,1.7, g.x,16,1.0);
+  else if (name==='tent' && t){ // stand in the open corner, look at the closed corner with the seating
+    const cl = t.closed || [], hw = t.w/2, hd = t.d/2;
+    const sx = !cl.includes('left') ? -1 : !cl.includes('right') ? 1 : 0, sy = !cl.includes('front') ? -1 : !cl.includes('back') ? 1 : 0;
+    const e = MJ.toPlan(t, sx*(hw-0.7), sy*(hd-0.5)), l = MJ.toPlan(t, -sx*(hw*0.55), -sy*(hd-1.2));
+    p = poseLook(e[0],e[1],1.65, l[0],l[1],0.55); }
+  else if (name==='bird') setAuto(true);
+  animateTo(p);
+};
+V.tour = () => {
+  if (tour){ stopTour(); return; }
+  setAuto(false); anim = null;
+  const g = MJ.find('gate')||{x:7.5}, f = MJ.find('fire')||{x:13,y:20,w:6.4}, t = MJ.find('tent');
+  const tf = t ? MJ.toPlan(t,0,-t.d/2-2.6) : [10,28], tin = t ? MJ.toPlan(t,0,t.d/2-1.4) : [10,35], s = f.x>10 ? -1 : 1;
+  const K = [[10,-30,17, 10,12,0,'Arriving. Cars stay outside.'], [g.x,-7,2.3, g.x,10,1.2,'The gate'], [g.x,1.5,1.7, g.x,16,1.1,'Walkway with low lights'],
+    [g.x+s*0.3,11,1.7, f.x,f.y,0.6,'Fire pit with floor seating'], [f.x+s*-2.2,f.y-5.2,2.4, f.x,f.y,0.3,'Fire pit with floor seating'],
+    [tf[0],tf[1],1.7, t?t.x:10, t?t.y:34, 1.3,'The tent, open on two sides'], [tin[0],tin[1],1.2, f.x,f.y,0.8,'Seated view from inside the tent'],
+    [10+s*-16,-12,36, 10,22,0,"Bird's-eye"]];
+  const P = K.map(k => new T.Vector3(TX(k[0]),k[2],TZ(k[1]))), Lk = K.map(k => new T.Vector3(TX(k[3]),k[5],TZ(k[4])));
+  tour = {pc:new T.CatmullRomCurve3(P), lc:new T.CatmullRomCurve3(Lk), caps:K.map(k => k[6]), t0:performance.now(), dur:36000};
+  document.getElementById('tourBtn').textContent = '■ Stop'; capEl.hidden = false;
+};
+function stepTour(now){
+  let u = (now - tour.t0)/tour.dur;
+  if (u>=1){ const e = tour.pc.getPoint(1), l = tour.lc.getPoint(1), r = e.distanceTo(l);
+    Object.assign(ctl,{tx:l.x, ty:l.y, tz:l.z, r, th:Math.atan2(e.x-l.x, e.z-l.z), ph:Math.acos(clamp((e.y-l.y)/r,-1,1))}); stopTour(); setAuto(true); applyCam(); return; }
+  const k = u*u*(3-2*u); camera.position.copy(tour.pc.getPoint(k)); camera.lookAt(tour.lc.getPoint(k));
+  capEl.textContent = tour.caps[Math.min(tour.caps.length-1, Math.floor(k*(tour.caps.length-1)+0.5))];
+}
+
+function resize(){ const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return; renderer.setSize(w,h,false); camera.aspect = w/h; camera.updateProjectionMatrix(); }
+function loop(){
+  requestAnimationFrame(loop);
+  const now = performance.now();
+  if (document.hidden || canvas.offsetParent===null) return;
+  const dt = Math.min(clock.getDelta(), 0.1), t = clock.elapsedTime;
+  if (tour) stepTour(now);
+  else {
+    if (anim){ let u = (now-anim.t0)/anim.dur; if (u>=1){ u = 1; } const k = u*u*(3-2*u); for (const key in anim.to) ctl[key] = anim.from[key] + (anim.to[key]-anim.from[key])*k; if (u>=1) anim = null; }
+    else if (autoTurn) ctl.th += dt*0.07;
+    applyCam();
+  }
+  V.anim.forEach(a => a(t,dt));
+  V.lights.forEach(l => { if (l.userData.flicker && night) l.intensity = l.userData.base*(0.82 + 0.18*Math.sin(t*13.1+l.id) * Math.sin(t*7.3)); });
+  if (V.rgb) M.lamp.emissive.setHSL((t*0.05)%1, 0.9, 0.55);
+  renderer.render(scene,camera); updateLabels();
+}
+
+function onChange(kind,id){
+  if (kind==='all'){ rebuildAll(); }
+  else if (kind==='fence'){ buildFence(); }
+  else if (kind==='north'){ setNight(night); }
+  else if (kind==='move'){
+    const it = MJ.find(id); if (!it) return; if (items[id]) place(items[id], it);
+    MJ.L.items.forEach(i => { if (i.follow===id && items[i.id]) place(items[i.id], i); });
+    if (it.t==='gate'){ clearTimeout(fenceTimer); fenceTimer = setTimeout(buildFence, 120); }
+    if (selId===id) place(selG,it);
+  }
+  else if (kind==='moved'){ const it = MJ.find(id); if (it && it.t==='gate') buildFence(); }
+  else if (kind==='select'){ selId = id; drawSel(); }
+}
+
+V.init = () => {
+  T = window.THREE; canvas = document.getElementById('c3d'); labelsEl = document.getElementById('labels'); capEl = document.getElementById('tourCap');
+  const msg = t => { const m = document.getElementById('msg3d'); m.textContent = t; m.hidden = false; };
+  if (!T){ msg('The 3D view could not load here. The plan still works.'); return false; }
+  try { renderer = new T.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'}); }
+  catch(e){ msg('3D is not available on this device. The plan still works.'); return false; }
+  const small = Math.min(screen.width, screen.height) < 700;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, small ? 1.5 : 2));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap; renderer.toneMapping = T.ACESFilmicToneMapping;
+  scene = new T.Scene(); camera = new T.PerspectiveCamera(48, 1, 0.1, 1500);
+  hemi = new T.HemisphereLight(0x8090c0, 0x30241a, 0.5); scene.add(hemi);
+  dir = new T.DirectionalLight(0xb6c6ff, 0.5); dir.castShadow = true; const ms = small ? 1024 : 2048; dir.shadow.mapSize.set(ms,ms);
+  Object.assign(dir.shadow.camera, {left:-36, right:36, top:36, bottom:-36, near:1, far:200}); dir.shadow.bias = -0.0005; dir.shadow.normalBias = 0.03;
+  scene.add(dir, dir.target);
+  makeTextures(); makeMaterials(); buildEnv();
+  fenceG = new T.Group(); itemsG = new T.Group(); selG = new T.Group(); scene.add(fenceG, itemsG, selG);
+  controls(); resize(); new ResizeObserver(resize).observe(canvas.parentElement);
+  rebuildAll(); applyCam();
+  clock = new T.Clock(); requestAnimationFrame(loop);
+  MJ.on(onChange);
+  document.getElementById('nightBtn').addEventListener('click', () => setNight(!night));
+  document.getElementById('orbitBtn').addEventListener('click', () => { stopTour(); anim = null; setAuto(!autoTurn); });
+  document.getElementById('lblBtn').addEventListener('click', e => { labelsOn = !labelsOn; e.currentTarget.setAttribute('aria-pressed', String(labelsOn)); });
+  document.getElementById('tourBtn').addEventListener('click', V.tour);
+  document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => V.view(b.dataset.view)));
+  return true;
+};
+})();
+
+</script>
+<script>
+/* v3d_items.js */
+/* Outdoor Majlis - 3D builders for each item. Local frame: x = item width, z = -(item depth axis); the item's front faces +z. */
+(function(){
+'use strict';
+const MJ = window.MJ, V = MJ.v3d, B = {}, X = {};
+let T, M;
+const box = (...a) => V.box(...a), cyl = (...a) => V.cyl(...a);
+const mat = (c,o) => X[c] || (X[c] = new T.MeshStandardMaterial(Object.assign({color:c, roughness:0.85}, o||{})));
+function uvScale(geo,su,sv){ const uv = geo.attributes.uv; for (let i=0;i<uv.count;i++) uv.setXY(i, uv.getX(i)*su, uv.getY(i)*sv); return geo; }
+function plane(w,h,m,p){ const o = new T.Mesh(new T.PlaneGeometry(w,h), m); o.receiveShadow = true; if (p) p.add(o); return o; }
+function flat(w,d,m,y,p){ const o = plane(w,d,m,p); o.rotation.x = -Math.PI/2; o.position.y = y; return o; }
+function quad(a,b,c,d,m,p,su,sv){
+  const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute([...a,...b,...c,...a,...c,...d],3));
+  g.setAttribute('uv', new T.Float32BufferAttribute([0,0,su,0,su,sv,0,0,su,sv,0,sv],2)); g.computeVertexNormals();
+  const o = new T.Mesh(g, m); o.castShadow = true; o.receiveShadow = true; p.add(o); return o;
+}
+const seatStyle = where => { const s = MJ.L.seats || 'floor'; return where==='tent' ? (s==='floor' || s==='mixed' ? 'floor' : 'sofa') : (s==='sofa' ? 'sofa' : 'floor'); };
+
+function seatBlock(g,w,d,style){
+  if (style==='floor'){
+    box(w,0.06,d+0.04,M.wood,0,0.03,0,g,false); box(w,0.18,d,M.cushion,0,0.15,0,g); box(w,0.5,0.22,M.cushion2,0,0.48,-(d/2-0.11),g);
+    box(w,0.025,0.025,M.gold,0,0.2,d/2,g,false);
+    [-1,1].forEach(s => { const c = cyl(0.12,0.12,Math.max(0.2,d-0.3),M.cushion,s*(w/2-0.13),0.32,0.05,g,10); c.rotation.x = Math.PI/2; });
+  } else {
+    box(w,0.28,d,M.wood,0,0.14,0,g); box(w-0.12,0.16,d-0.12,M.cushion,0,0.36,0.03,g);
+    box(w,0.55,0.16,M.cushion,0,0.6,-(d/2-0.08),g); [-1,1].forEach(s => box(0.12,0.62,d,M.wood,s*(w/2-0.06),0.31,0,g));
+  }
+}
+B.seat = (g,it) => seatBlock(g,it.w,it.d,seatStyle(it.follow==='tent' ? 'tent' : 'fire'));
+B.chair = (g,it) => {
+  const w = it.w, d = it.d;
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => box(0.05,0.36,0.05,M.wood,c[0]*(w/2-0.06),0.18,c[1]*(d/2-0.06),g,false));
+  box(w,0.06,d,M.wood,0,0.38,0,g); box(w-0.12,0.14,d-0.12,M.cushion,0,0.48,0.03,g);
+  box(w,0.55,0.12,M.wood,0,0.7,-(d/2-0.06),g); box(w-0.16,0.45,0.1,M.cushion2,0,0.72,-(d/2-0.16),g);
+  [-1,1].forEach(s => box(0.08,0.22,d,M.wood,s*(w/2-0.04),0.56,0,g));
+};
+
+B.tent = (g,it) => {
+  const w = it.w, d = it.d, hw = w/2, hd = d/2, H = 2.4, R = 3.5, cl = it.closed || [];
+  const fl = flat(w,d,M.carpet,0.035,g); uvScale(fl.geometry,w/3,d/3);
+  box(w+0.12,0.03,d+0.12,M.wood,0,0.015,0,g,false);
+  const nx = Math.max(1, Math.round(w/3.5));
+  for (let k=0;k<=nx;k++){ const x = -hw + k*w/nx; cyl(0.05,0.05,H,M.wood,x,H/2,hd,g,8); cyl(0.05,0.05,H,M.wood,x,H/2,-hd,g,8); }
+  [-1,1].forEach(s => cyl(0.06,0.06,R,M.wood,s*hw,R/2,0,g,8));
+  const o = 0.3, ey = H - (R-H)/hd*o;
+  quad([-hw-o,ey,hd+o],[hw+o,ey,hd+o],[hw+o,R,0],[-hw-o,R,0],M.canvas,g,w/2,1);
+  quad([hw+o,ey,-hd-o],[-hw-o,ey,-hd-o],[-hw-o,R,0],[hw+o,R,0],M.canvas,g,w/2,1);
+  [-1,1].forEach(s => { const tg = new T.BufferGeometry(); tg.setAttribute('position', new T.Float32BufferAttribute([s*hw,H,hd, s*hw,H,-hd, s*hw,R,0],3));
+    tg.setAttribute('uv', new T.Float32BufferAttribute([0,0,3,0,1.5,0.5],2)); tg.computeVertexNormals(); const m = new T.Mesh(tg, M.canvas); m.castShadow = true; g.add(m); });
+  const S = {front:{c:[0,hd],n:[0,-1],len:w,rot:0}, back:{c:[0,-hd],n:[0,1],len:w,rot:Math.PI}, left:{c:[-hw,0],n:[1,0],len:d,rot:-Math.PI/2}, right:{c:[hw,0],n:[-1,0],len:d,rot:Math.PI/2}};
+  for (const s in S){
+    const q = S[s], closed = cl.includes(s);
+    const hgt = closed ? H : 0.38, y = closed ? H/2 : H - 0.19;
+    const out = plane(q.len, hgt, M.canvas, g); out.position.set(q.c[0], y, q.c[1]); out.rotation.y = q.rot; out.castShadow = true;
+    const inn = plane(q.len, hgt, M.sadu, g); uvScale(inn.geometry, q.len/2, closed ? 1 : 0.16);
+    inn.position.set(q.c[0]+q.n[0]*0.02, y, q.c[1]+q.n[1]*0.02); inn.rotation.y = q.rot + Math.PI;
+    if (!closed){ const r = cyl(0.13,0.13,q.len,M.canvas,q.c[0]-q.n[0]*0.14, H-0.5, q.c[1]-q.n[1]*0.14, g, 10); r.rotation.z = Math.PI/2; if (s==='front' || s==='back'){} else { r.rotation.z = 0; r.rotation.x = Math.PI/2; } }
+  }
+  if (it.pantrySide && S[it.pantrySide] && cl.includes(it.pantrySide)){ // wooden door through to the pantry
+    const q = S[it.pantrySide], a = it.pantryDoor||0, alongX = it.pantrySide==='front' || it.pantrySide==='back';
+    const x = alongX ? a : q.c[0], z = alongX ? q.c[1] : -a, rot = Math.atan2(q.n[0], q.n[1]);
+    const dg = new T.Group(); dg.position.set(x+q.n[0]*0.04, 0, z+q.n[1]*0.04); dg.rotation.y = rot; g.add(dg);
+    box(1.1,0.1,0.06,M.wood,0,2.15,0,dg,false); [-1,1].forEach(s => box(0.08,2.15,0.06,M.wood,s*0.51,1.075,0,dg,false)); box(0.94,2.08,0.04,M.wood,0,1.04,0.02,dg,false);
+    box(0.04,0.04,0.06,M.gold,0.36,1.0,0.06,dg,false);
+  }
+  const ac = MJ.L.ac || 'ducted', walls = ['back','front','left','right'].filter(s => cl.includes(s));
+  const wall = walls[0];
+  if (wall){
+    const q = S[wall], along = wall==='front' || wall==='back' ? [1,0] : [0,1], face = Math.atan2(q.n[0], q.n[1]);
+    const at = (t,y,dist,obj) => { obj.position.set(q.c[0]+along[0]*t+q.n[0]*dist, y, q.c[1]+along[1]*t+q.n[1]*dist); obj.rotation.y = face; return obj; };
+    if (ac==='split'){ const n = q.len>9 ? 3 : 2; for (let k=0;k<n;k++) at((k-(n-1)/2)*q.len/n, 2.02, 0.15, box(0.95,0.3,0.22,M.white,0,0,0,g)); }
+    else if (ac==='floor'){ [-1,1].forEach(s => at(s*(q.len/2-0.5), 0.95, 0.25, box(0.55,1.85,0.35,M.white,0,0,0,g))); }
+    else walls.forEach(ws => { const qq = S[ws], al = ws==='front' || ws==='back' ? [1,0] : [0,1], f2 = Math.atan2(qq.n[0], qq.n[1]);
+      for (let t=-qq.len/2+1.5; t<=qq.len/2-1.4; t+=3.2){ const gr = box(2.0,0.12,0.05,M.dark,qq.c[0]+al[0]*t+qq.n[0]*0.05, 2.18, qq.c[1]+al[1]*t+qq.n[1]*0.05, g, false); gr.rotation.y = f2; } });
+  }
+};
+
+B.table = (g,it) => {
+  box(it.w,0.05,it.d,M.wood,0,0.33,0,g);
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => box(0.05,0.31,0.05,M.wood,c[0]*(it.w/2-0.07),0.155,c[1]*(it.d/2-0.07),g,false));
+  cyl(0.19,0.19,0.02,M.gold,0,0.365,0,g,16); cyl(0.03,0.06,0.17,M.gold,0.05,0.46,0,g,10);
+};
+B.lantern = (g) => {
+  cyl(0.008,0.008,0.7,M.dark,0,2.98,0,g,4); cyl(0.13,0.13,0.34,M.lamp,0,2.45,0,g,10);
+  cyl(0.15,0.15,0.04,M.gold,0,2.64,0,g,10); cyl(0.15,0.15,0.04,M.gold,0,2.26,0,g,10);
+  V.glowAt(g,0,2.45,0,1.5); V.lightAt(g,0,2.3,0,0xffb36a,24,11,2,false);
+};
+B.bonfire = (g,it) => {
+  const R = Math.min(it.w,it.d)/2;
+  const rug = new T.Mesh(new T.RingGeometry(Math.max(0.9,R-1.05), R+0.15, 56), mat(0x6e4a2a,{roughness:1})); rug.rotation.x = -Math.PI/2; rug.position.y = 0.012; rug.receiveShadow = true; g.add(rug);
+  const ash = new T.Mesh(new T.CircleGeometry(0.6,24), mat(0x2a2420)); ash.rotation.x = -Math.PI/2; ash.position.y = 0.02; g.add(ash);
+  const emb = new T.Mesh(new T.CircleGeometry(0.42,20), M.ember); emb.rotation.x = -Math.PI/2; emb.position.y = 0.04; g.add(emb);
+  for (let k=0;k<14;k++){ const a = k/14*Math.PI*2, s = new T.Mesh(new T.DodecahedronGeometry(0.13,0), M.stone); s.position.set(Math.cos(a)*0.64,0.1,Math.sin(a)*0.64); s.rotation.set(a,a*2,0); s.castShadow = true; g.add(s); }
+  for (let k=0;k<4;k++){ const l = cyl(0.06,0.06,0.95,mat(0x3d2817),0,0.26,0,g,8); l.rotation.set(0.62,k*Math.PI/4,0, 'YXZ'); }
+  const fl = [];
+  [[0,0,0.26,1.05,M.flameA],[0.12,0.05,0.18,0.8,M.flameB],[-0.1,-0.06,0.2,0.85,M.flameA],[0.03,-0.12,0.15,0.65,M.flameB],[-0.05,0.12,0.14,0.6,M.flameB]].forEach((f,k) => {
+    const c = new T.Mesh(new T.ConeGeometry(f[2],f[3],8,1,true), f[4]); c.geometry.translate(0,f[3]/2,0); c.position.set(f[0],0.1,f[1]); g.add(c); fl.push([c,k*1.7]); });
+  V.anim.push(t => fl.forEach(([c,p]) => { const s = 0.78 + 0.3*Math.sin(t*9.5+p)*Math.sin(t*4.1+p*2); c.scale.set(0.9+0.12*Math.sin(t*7+p), s, 0.9+0.12*Math.cos(t*6+p)); c.rotation.y = t*0.8+p; }));
+  V.glowAt(g,0,0.7,0,3.6,0xff9a40); V.poolAt(g,0,0,2*R+6,0.8); V.lightAt(g,0,1.0,0,0xff8a3a,140,24,3,true);
+  const style = seatStyle('fire'), n = Math.max(5, Math.round(2*Math.PI*(R-0.5)/1.35));
+  for (let k=0;k<n;k++){
+    const a = k/n*Math.PI*2, lx = Math.cos(a)*(R-0.5), ly = Math.sin(a)*(R-0.5), sg = new T.Group();
+    sg.position.set(lx,0,-ly); sg.rotation.y = Math.atan2(-lx, ly); g.add(sg);
+    if (style==='floor'){ box(1.1,0.18,0.62,M.cushion,0,0.09,0,sg); box(1.1,0.42,0.18,M.cushion2,0,0.39,-0.22,sg); }
+    else { box(1.25,0.06,0.45,M.wood,0,0.42,0,sg); [-1,1].forEach(s => box(0.06,0.42,0.42,M.wood,s*0.55,0.21,0,sg,false)); }
+  }
+};
+B.path = (g,it) => {
+  const p = flat(it.w,it.d,M.gravel,0.014,g); uvScale(p.geometry,it.w/1.5,it.d/1.5);
+  [-1,1].forEach(s => box(0.06,0.07,it.d,M.dark,s*it.w/2,0.035,0,g,false));
+  for (let y=-it.d/2+1; y<=it.d/2-0.5; y+=4) [-1,1].forEach(s => {
+    const x = s*(it.w/2+0.22), z = -y; cyl(0.06,0.06,0.5,M.dark,x,0.25,z,g,8); cyl(0.065,0.065,0.06,M.lamp,x,0.52,z,g,8); V.poolAt(g,x,z,2.0,0.45); });
+};
+function cabin(g,w,h,d,wallM){
+  box(w,h,d,wallM,0,h/2,0,g); box(w+0.3,0.08,d+0.3,M.dark,0,h+0.04,0,g);
+}
+function doorLight(g,x,y,z){ box(0.22,0.08,0.1,M.lamp,x,y,z,g,false); V.glowAt(g,x,y,z+0.05,1.0); V.poolAt(g,x,z+1.2,3.2,0.5); }
+B.toilets = (g,it) => {
+  const w = it.w, d = it.d; cabin(g,w,2.45,d,M.panel);
+  [-1,1].forEach(s => { box(0.8,2.0,0.04,M.wood,s*w/4,1.0,d/2+0.02,g); box(0.05,0.05,0.06,M.metal,s*w/4+0.3,1.0,d/2+0.06,g,false); doorLight(g,s*w/4,2.22,d/2+0.06); });
+  cyl(0.05,0.05,0.6,M.metal,w/2-0.3,2.75,-d/2+0.3,g,8);
+};
+B.septic = (g,it) => { flat(it.w,it.d,M.under,0.01,g); cyl(0.33,0.33,0.04,M.metal,-it.w/4,0.02,0,g,20); cyl(0.33,0.33,0.04,M.metal,it.w/4,0.02,0,g,20); };
+B.water = (g,it) => { flat(it.w,it.d,mat(0x23435c,{transparent:true,opacity:0.3,depthWrite:false}),0.01,g); cyl(0.33,0.33,0.04,M.metal,0,0.02,0,g,20); box(0.5,0.4,0.4,mat(0x2f5f8a),it.w/2-0.35,0.2,0,g); };
+B.pantry = (g,it) => {
+  const w = it.w, d = it.d; cabin(g,w,2.55,d,mat(0xd6c09a));
+  (it.doors || ['front']).forEach(s => {
+    const dg = new T.Group(); g.add(dg);
+    if (s==='front') dg.position.set(0,0,d/2+0.02); else if (s==='back'){ dg.position.set(0,0,-d/2-0.02); dg.rotation.y = Math.PI; }
+    else if (s==='right'){ dg.position.set(w/2+0.02,0,0); dg.rotation.y = Math.PI/2; } else { dg.position.set(-w/2-0.02,0,0); dg.rotation.y = -Math.PI/2; }
+    box(0.9,2.05,0.05,M.wood,0,1.025,0,dg); box(0.04,0.04,0.06,M.gold,0.33,1.0,0.04,dg,false);
+    if (s!=='front') doorLight(dg,0,2.3,0.04);
+  });
+};
+B.acout = (g,it) => { [-1,1].forEach(s => { box(0.95,0.72,0.34,M.white,s*0.6,0.42,0,g); const f = new T.Mesh(new T.CircleGeometry(0.24,20), M.dark); f.position.set(s*0.6,0.44,0.175); g.add(f); box(0.9,0.05,0.3,M.dark,s*0.6,0.03,0,g,false); }); };
+B.board = (g,it) => { box(it.w,0.12,it.d,M.stone,0,0.06,0,g); box(it.w,1.45,it.d,M.metal,0,0.845,0,g); box(it.w+0.08,0.05,it.d+0.08,M.dark,0,1.6,0,g); box(0.2,0.2,0.01,mat(0xf2c200),0,1.2,it.d/2+0.01,g,false); };
+B.corner = (g) => {
+  box(0.12,2.6,0.12,M.steel,0,1.3,0,g); box(0.3,0.4,0.3,M.lamp,0,2.78,0,g); const c = new T.Mesh(new T.ConeGeometry(0.26,0.18,4), M.dark); c.position.y = 3.07; c.rotation.y = Math.PI/4; g.add(c);
+  V.glowAt(g,0,2.78,0,2.6); V.poolAt(g,0,0,8,0.6); V.lightAt(g,0,2.7,0,0xffb060,55,18,2,false);
+};
+B.person = (g,it) => {
+  const s = it.s || 'k', robe = s==='a' ? M.robeB : M.robeW;
+  if (s!=='c'){ cyl(0.2,0.29,1.42,robe,0,0.73,0,g,16); cyl(0.215,0.2,0.12,robe,0,1.46,0,g,16); }
+  else { [-1,1].forEach(k => { cyl(0.075,0.07,0.84,M.jeans,k*0.1,0.44,0,g,8); box(0.1,0.06,0.24,M.dark,k*0.1,0.03,0.04,g); }); cyl(0.2,0.17,0.62,M.shirt,0,1.2,0,g,14); }
+  const am = s==='c' ? M.shirt : robe;
+  [-1,1].forEach(k => { const a = cyl(0.055,0.05,0.62,am,k*0.25,1.17,0,g,8); a.rotation.z = -k*0.08; cyl(0.045,0.045,0.1,M.skin,k*0.275,0.82,0,g,8); });
+  cyl(0.055,0.06,0.1,M.skin,0,1.56,0,g,8);
+  const head = new T.Mesh(new T.SphereGeometry(0.105,16,12), M.skin); head.position.y = 1.695; head.castShadow = true; g.add(head);
+  if (s==='k' || s==='a'){
+    const cm = s==='k' ? M.robeW : M.robeB;
+    const cap = new T.Mesh(new T.SphereGeometry(0.118,16,12,0,Math.PI*2,0,Math.PI*0.6), cm); cap.position.y = 1.702; g.add(cap);
+    const dr = new T.Mesh(new T.CylinderGeometry(0.12,0.2,0.3,14,1,true,Math.PI*0.32,Math.PI*1.36), cm); dr.position.y = 1.56; dr.castShadow = true; g.add(dr);
+    if (s==='k'){ const ag = new T.Mesh(new T.TorusGeometry(0.108,0.014,6,20), M.robeB); ag.rotation.x = Math.PI/2; ag.position.y = 1.77; g.add(ag); }
+  }
+};
+B.car = (g,it) => {
+  const w = it.w, d = it.d, col = [0xc9ced4,0xf0f0ee,0x202328,0x7d8a99][(it.col||0)%4];
+  box(w,0.62,d,mat(col,{roughness:0.35,metalness:0.4}),0,0.6,0,g); box(w*0.5,0.5,d-0.14,M.glass,-0.15,1.15,0,g);
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => { const wh = cyl(0.33,0.33,0.24,M.dark,c[0]*(w/2-0.85),0.33,c[1]*(d/2-0.08),g,14); wh.rotation.x = Math.PI/2; });
+  [-1,1].forEach(s => box(0.04,0.12,0.3,M.white,w/2,0.7,s*(d/2-0.3),g,false));
+};
+B.gate = (g,it) => {
+  const w = it.w, hw = w/2;
+  [-1,1].forEach(s => { box(0.22,2.7,0.22,M.steel,s*hw,1.35,0,g); box(0.17,0.26,0.17,M.lamp,s*(hw-0.2),2.25,0.05,g,false); V.glowAt(g,s*(hw-0.2),2.25,0.05,1.3); });
+  box(w+0.44,0.22,0.22,M.steel,0,2.72,0,g);
+  [-1,1].forEach(s => { const lf = new T.Group(); lf.position.set(s*(hw-0.11),0,0); lf.rotation.y = s<0 ? 1.08 : -1.08; g.add(lf);
+    const L = hw-0.14, dir = -s; box(L,0.05,0.05,M.steel,dir*L/2,1.9,0,lf,false); box(L,0.05,0.05,M.steel,dir*L/2,0.1,0,lf,false); box(0.05,1.85,0.05,M.steel,dir*L,1.0,0,lf,false);
+    const f = plane(L,1.75,M.fabric,lf); f.position.set(dir*L/2,1.0,0); });
+};
+B.festoon = (g,it) => {
+  const hw = it.w/2, hd = it.d/2, pts = [], wire = [], m4 = new T.Matrix4();
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => cyl(0.05,0.05,3.2,M.steel,c[0]*hw,1.6,c[1]*hd,g,8));
+  [-1,1].forEach(s => wire.push(s*hw,3.1,-hd, s*hw,3.1,hd));
+  for (let k=0;k<5;k++){ const z = -hd + (k+0.5)*it.d/5; let prev = null;
+    for (let j=0;j<=16;j++){ const u = j/16, x = -hw + u*it.w, y = 3.05 - 0.5*4*u*(1-u), p = [x,y,z]; if (j>0 && j<16) pts.push(p); if (prev) wire.push(...prev, ...p); prev = p; } }
+  const bi = new T.InstancedMesh(new T.SphereGeometry(0.05,6,4), M.bulb, pts.length); pts.forEach((p,i) => { m4.makeTranslation(p[0],p[1],p[2]); bi.setMatrixAt(i,m4); }); g.add(bi);
+  pts.forEach((p,i) => { if (i%4===0) V.glowAt(g,p[0],p[1],p[2],0.7); });
+  const wg = new T.BufferGeometry(); wg.setAttribute('position', new T.Float32BufferAttribute(wire,3)); g.add(new T.LineSegments(wg, M.line));
+};
+B.bbq = (g,it) => { [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => box(0.05,0.8,0.05,M.dark,c[0]*(it.w/2-0.1),0.4,c[1]*(it.d/2-0.1),g,false)); box(it.w-0.1,0.3,it.d-0.1,M.dark,0,0.92,0,g); box(it.w-0.2,0.02,it.d-0.2,M.ember,0,1.075,0,g,false); };
+B.coffee = (g,it) => { box(it.w,0.85,it.d,M.wood,0,0.425,0,g); box(it.w+0.05,0.04,it.d+0.05,M.white,0,0.87,0,g); [-0.5,0,0.5].forEach(x => { cyl(0.035,0.08,0.24,M.gold,x,1.01,0,g,10); }); };
+B.palm = (g,it) => {
+  const h = 5.6, tr = cyl(0.17,0.26,h,M.trunk,0,h/2,0,g,10); tr.rotation.z = 0.03;
+  for (let k=0;k<12;k++){ const fg = new T.Group(); fg.position.set(0,h,0); fg.rotation.y = k/12*Math.PI*2; g.add(fg);
+    const geo = new T.ConeGeometry(0.34,3.1,4); geo.translate(0,1.55,0); const fr = new T.Mesh(geo, M.leaf); fr.scale.set(1,1,0.14); fr.rotation.z = -(Math.PI/2 + (k%2 ? 0.4 : -0.18)); fr.castShadow = true; fg.add(fr); }
+  V.glowAt(g,0,0.5,0,1.6); V.poolAt(g,0,0,3,0.5);
+};
+B.sink = (g) => { cyl(0.1,0.12,0.8,M.white,0,0.4,0,g,12); box(0.6,0.15,0.45,M.white,0,0.86,0,g); cyl(0.015,0.015,0.2,M.metal,0,1.02,-0.15,g,6); };
+B.ext = (g) => { box(0.3,0.05,0.3,M.dark,0,0.025,0,g,false); cyl(0.09,0.09,0.5,M.red,0,0.3,0,g,12); cyl(0.04,0.04,0.08,M.dark,0,0.59,0,g,8); box(0.04,1.5,0.04,M.steel,0.22,0.75,0,g,false); box(0.25,0.25,0.01,M.red,0.22,1.45,0.025,g,false); };
+B.screen = (g,it) => { [-1,1].forEach(s => box(0.08,2.9,0.08,M.steel,s*it.w/2,1.45,0,g)); const sc = plane(it.w-0.1,1.8,M.screen,g); sc.position.set(0,1.9,0.03); const bk = plane(it.w-0.1,1.8,M.dark,g); bk.position.set(0,1.9,0.0); bk.rotation.y = Math.PI; };
+B.play = (g,it) => {
+  flat(it.w,it.d,M.rubber,0.02,g); const y = mat(0xf2c230), r = mat(0xd9462b), b = mat(0x2f6fb5);
+  box(1.2,1.1,1.2,b,-it.w/4,0.55,-it.d/4,g); const roof = new T.Mesh(new T.ConeGeometry(1.0,0.7,4), r); roof.position.set(-it.w/4,1.45,-it.d/4); roof.rotation.y = Math.PI/4; roof.castShadow = true; g.add(roof);
+  box(1.0,0.06,1.0,y,it.w/5,1.2,0,g); [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => box(0.06,1.2,0.06,y,it.w/5+c[0]*0.45,0.6,c[1]*0.45,g,false));
+  const sl = box(0.5,0.04,2.1,r,it.w/5,0.62,1.4,g); sl.rotation.x = 0.6;
+};
+B.gen = (g,it) => { box(it.w,0.1,it.d,M.dark,0,0.05,0,g); box(it.w-0.1,1.2,it.d-0.1,mat(0x3f5f45),0,0.7,0,g); cyl(0.05,0.05,0.5,M.metal,it.w/2-0.3,1.5,0,g,8); };
+B.bench = (g,it) => { box(it.w,0.05,it.d,M.wood,0,0.45,0,g); [-1,1].forEach(s => box(0.06,0.45,it.d-0.06,M.wood,s*(it.w/2-0.15),0.225,0,g,false)); box(it.w,0.32,0.04,M.wood,0,0.74,-(it.d/2-0.03),g); };
+B.tv = (g,it) => { cyl(0.2,0.2,0.03,M.dark,0,0.015,0,g,16); cyl(0.03,0.03,0.9,M.dark,0,0.47,0,g,8); box(it.w,0.92,0.06,M.dark,0,1.3,0,g); const s = plane(it.w-0.06,0.86,M.glass,g); s.position.set(0,1.3,0.032); };
+B.speaker = (g) => { [0,1,2].forEach(k => { const l = cyl(0.015,0.015,1.25,M.dark,0,0.6,0,g,6); l.rotation.set(0.25,k*Math.PI*2/3,0,'YXZ'); }); cyl(0.02,0.02,0.6,M.dark,0,1.15,0,g,6); box(0.35,0.55,0.3,M.dark,0,1.6,0,g); };
+
+V.make = it => {
+  T = window.THREE; M = V.M; const f = B[it.t]; if (!f) return null;
+  const g = new T.Group(); f(g,it); g.userData.id = it.id;
+  return g;
+};
+})();
+
+</script>
+<script>
+/* public.js */
+/* Outdoor Majlis - public view-only start: the saved plan is embedded, nothing is saved, nothing can be moved. */
+(function(){
+'use strict';
+const MJ = window.MJ, $ = id => document.getElementById(id), DATA = window.__MAJLIS;
+MJ.readOnly = true;
+MJ.toast = t => { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(MJ._tt); MJ._tt = setTimeout(() => { el.hidden = true; }, 2300); };
+Object.assign(MJ.ans, DATA.choices || {});
+MJ.L = JSON.parse(JSON.stringify(DATA.layout));
+function setMode(m){
+  const p = $('panes'); if (m==='both' && innerWidth<900) m = '3d';
+  p.dataset.mode = m; [['m3d','3d'],['mplan','plan'],['mboth','both']].forEach(([id,v]) => $(id).setAttribute('aria-pressed', String(v===m)));
+  window.dispatchEvent(new Event('resize'));
+}
+function start(){
+  MJ.planInit();
+  let ok = false; try { ok = MJ.v3d.init(); } catch(e){ console.error(e); }
+  $('m3d').addEventListener('click', () => setMode('3d')); $('mplan').addEventListener('click', () => setMode('plan')); $('mboth').addEventListener('click', () => setMode('both'));
+  setMode(ok ? (innerWidth>=900 ? 'both' : '3d') : 'plan');
+  if (ok && !/notour/.test(location.search)) setTimeout(() => { if (MJ.v3d.tour) MJ.v3d.tour(); }, 1800);
+}
+if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
+</script>
+
+</body></html>
