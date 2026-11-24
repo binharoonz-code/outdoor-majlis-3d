@@ -20,7 +20,7 @@
 :root{
   --bg:#f1f0ec;--surface:#ffffff;--surface2:#f6f5f2;--ink:#1c1b19;--muted:#67625b;--line:#dcd8d0;
   --accent:#c4501b;--accent-ink:#ffffff;--good:#2c7a4c;
-  --plot:#ecdcbc;--outside:#e2ded6;--grid:rgba(90,70,40,.10);--grid5:rgba(90,70,40,.24);
+  --plot:#e2ad86;--outside:#e2ded6;--grid:rgba(90,70,40,.10);--grid5:rgba(90,70,40,.24);
   --fence:#3a2e24;--tentfill:#f6eedd;--tentline:#5a4330;--seat:#f1ebdf;--wood:#8a5a2c;--gravel:#d3c8b5;
   --lamp:#f2a516;--water:#3a7db3;--sewage:#7d6b45;--cab:#e46d1e;--sel:#1f6fd1;
   --f-display:'Space Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -29,13 +29,13 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#111316;--surface:#1a1d22;--surface2:#21252c;--ink:#ece9e3;--muted:#a39e95;--line:#30343c;
   --accent:#ff7b3c;--accent-ink:#1d0d04;--good:#5fc48d;
-  --plot:#5b4b34;--outside:#25282e;--grid:rgba(255,240,210,.07);--grid5:rgba(255,240,210,.17);
+  --plot:#6a4127;--outside:#25282e;--grid:rgba(255,240,210,.07);--grid5:rgba(255,240,210,.17);
   --fence:#eadcc5;--tentfill:#3d3429;--tentline:#e6cda9;--seat:#e4dccd;--wood:#c08a5b;--gravel:#6e6659;
   --lamp:#ffc95a;--water:#6cabdc;--sewage:#b89f6c;--cab:#ff9a4d;--sel:#6aa8ff;color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111316;--surface:#1a1d22;--surface2:#21252c;--ink:#ece9e3;--muted:#a39e95;--line:#30343c;
   --accent:#ff7b3c;--accent-ink:#1d0d04;--good:#5fc48d;
-  --plot:#5b4b34;--outside:#25282e;--grid:rgba(255,240,210,.07);--grid5:rgba(255,240,210,.17);
+  --plot:#6a4127;--outside:#25282e;--grid:rgba(255,240,210,.07);--grid5:rgba(255,240,210,.17);
   --fence:#eadcc5;--tentfill:#3d3429;--tentline:#e6cda9;--seat:#e4dccd;--wood:#c08a5b;--gravel:#6e6659;
   --lamp:#ffc95a;--water:#6cabdc;--sewage:#b89f6c;--cab:#ff9a4d;--sel:#6aa8ff;color-scheme:dark}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
@@ -195,7 +195,7 @@ button{font:inherit;color:inherit}
 </div>
 <div class="toast" id="toast" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
-<script>window.__MAJLIS = {"choices":{"ac":"ducted","addons":["sink","bbq","festoon","palms","play"],"front":"closed","gate":"3","inside":["sockets","fridge","psink","cook","coffeein"],"lstep":"2","lstyle":["lantern"],"north":"back-right","power":"grid","seats":"mixed","tent":"B-left","truck":["front"],"wc":"front"},"layout":{"ac":"ducted","fence":{"frontClosed":true,"step":2},"items":[{"d":0.3,"id":"gate","r":0,"t":"gate","w":3,"x":12.5,"y":0},{"closed":["back","right"],"d":6,"id":"tent","main":true,"pantryDoor":0,"pantrySide":"right","r":90,"t":"tent","w":14,"x":3.466745138168335,"y":30.122803688049316},{"d":31,"follow":"gate","id":"path","r":0,"t":"path","w":1.5,"x":12.5,"y":15.5},{"d":6.4,"id":"fire","r":0,"t":"bonfire","w":6.4,"x":5.112151145935059,"y":15.189031600952148},{"d":2.4,"doors":["front","right"],"id":"pantry","r":0,"t":"pantry","w":6,"x":3.466745138168335,"y":38.32},{"d":0.7,"id":"acout","r":0,"t":"acout","w":2.4,"x":13,"y":39.3},{"d":0.4,"follow":"gate","id":"board","r":0,"t":"board","w":0.9,"x":15.1,"y":0.6},{"d":0.4,"id":"c1","r":0,"t":"corner","w":0.4,"x":0.35,"y":0.35},{"d":0.4,"id":"c2","r":0,"t":"corner","w":0.4,"x":19.65,"y":0.35},{"d":0.4,"id":"c3","r":0,"t":"corner","w":0.4,"x":0.35,"y":39.65},{"d":0.4,"id":"c4","r":0,"t":"corner","w":0.4,"x":19.65,"y":39.65},{"d":0.35,"id":"p1","r":180,"s":"k","t":"person","w":0.5,"x":12.2,"y":5.5},{"d":0.35,"id":"p2","r":180,"s":"k","t":"person","w":0.5,"x":12.85,"y":9.8},{"d":0.35,"id":"p3","r":115,"s":"a","t":"person","w":0.5,"x":3.74,"y":18.48},{"d":0.35,"id":"p4","r":-120,"s":"k","t":"person","w":0.5,"x":10.12,"y":18.2},{"d":0.35,"id":"p5","r":5,"s":"c","t":"person","w":0.5,"x":6.69,"y":23.59},{"d":0.35,"id":"p6","r":0,"s":"k","t":"person","w":0.5,"x":10.19,"y":28.2},{"d":0.35,"id":"p7","r":25,"s":"a","t":"person","w":0.5,"x":13.7,"y":28.3},{"d":0.35,"id":"p8","r":180,"s":"k","t":"person","w":0.5,"x":5,"y":6.8},{"col":1,"d":1.9,"id":"car-1","r":90,"t":"car","w":4.6,"x":2.2,"y":-4.3},{"col":2,"d":1.9,"id":"car-2","r":90,"t":"car","w":4.6,"x":7.8,"y":-4.3},{"col":3,"d":1.9,"id":"car-3","r":90,"t":"car","w":4.6,"x":19,"y":-4.3},{"d":1.8,"id":"wc","r":180,"t":"toilets","w":3.4,"x":2.4,"y":4.4},{"d":2,"id":"septic","r":0,"t":"septic","w":3,"x":2.4,"y":1.7},{"d":1.6,"id":"water","r":0,"t":"water","w":2.4,"x":6.2,"y":1.5},{"addon":"sink","d":0.5,"id":"add-sink","r":180,"t":"sink","w":0.8,"x":4.699999999999999,"y":4.5},{"addon":"bbq","d":0.8,"id":"add-bbq","r":0,"t":"bbq","w":1.6,"x":10.8,"y":38.7},{"addon":"festoon","d":9,"follow":"fire","id":"add-festoon","r":0,"t":"festoon","w":9,"x":5.112151145935059,"y":15.189031600952148},{"addon":"palms","d":3,"id":"add-palm-1","r":0,"t":"palm","w":3,"x":18.112957572937013,"y":17.559197616577148},{"addon":"palms","d":3,"id":"add-palm-2","r":0,"t":"palm","w":3,"x":17.60515251159668,"y":2.0301162719726564},{"addon":"play","d":5,"id":"add-play","r":0,"t":"play","w":5,"x":17,"y":9},{"d":5.3,"id":"path2","r":90,"t":"path","w":1.5,"x":9.12,"y":30},{"d":0.6,"follow":"tent","id":"coffee-lako33","r":0,"t":"coffee","w":2.2,"x":5.167,"y":36.673},{"d":0.8,"follow":"tent","id":"chair-lako34","r":70,"t":"chair","w":0.8,"x":1.067,"y":23.773},{"d":0.8,"follow":"tent","id":"chair-lako35","r":82,"t":"chair","w":0.8,"x":1.067,"y":24.573},{"d":0.8,"follow":"tent","id":"chair-lako36","r":110,"t":"chair","w":0.8,"x":1.067,"y":36.473},{"d":0.8,"follow":"tent","id":"chair-lako37","r":98,"t":"chair","w":0.8,"x":1.067,"y":35.673},{"d":0.9,"follow":"tent","id":"seat-lako38","r":90,"t":"seat","w":10.2,"x":1.067,"y":30.123},{"d":0.6,"follow":"tent","id":"table-lako39","r":90,"t":"table","w":1.2,"x":2.217,"y":26.723},{"d":0.6,"follow":"tent","id":"table-lako40","r":90,"t":"table","w":1.2,"x":2.217,"y":30.123},{"d":0.6,"follow":"tent","id":"table-lako41","r":90,"t":"table","w":1.2,"x":2.217,"y":33.523},{"d":0.9,"follow":"tent","id":"seat-lako42","r":0,"t":"seat","w":1.35,"x":2.242,"y":36.523},{"d":0.5,"follow":"tent","id":"lantern-lako43","r":90,"t":"lantern","w":0.5,"x":3.467,"y":25.456},{"d":0.5,"follow":"tent","id":"lantern-lako44","r":90,"t":"lantern","w":0.5,"x":3.467,"y":30.123},{"d":0.5,"follow":"tent","id":"lantern-lako45","r":90,"t":"lantern","w":0.5,"x":3.467,"y":34.789}],"lights":{"every":2,"styles":["lantern"]},"north":"back-right","seats":"mixed","v":1}};</script>
+<script>window.__MAJLIS = {"choices":{"ac":"ducted","addons":["sink","bbq","festoon","palms","play"],"front":"closed","gate":"3","inside":["sockets","fridge","psink","cook","coffeein"],"lstep":"2","lstyle":["lantern"],"north":"back-right","power":"gen","seats":"mixed","tent":"A-left","truck":["front"],"wc":"front"},"layout":{"ac":"ducted","fence":{"frontClosed":true,"step":2},"items":[{"d":0.3,"id":"gate","r":0,"t":"gate","w":3,"x":10.25,"y":0},{"closed":["back"],"d":6,"id":"tent","main":true,"pantryDoor":6.75,"pantrySide":"back","r":0,"t":"tent","w":16,"x":10,"y":34.5},{"d":28.7,"follow":"gate","id":"path","r":0,"t":"path","w":1.5,"x":10.25,"y":16.65},{"d":6.4,"id":"fire","r":0,"t":"bonfire","w":6.4,"x":4.5,"y":18.5},{"d":2,"doors":["front","right"],"id":"pantry","r":0,"t":"pantry","w":6,"x":16.75,"y":39},{"d":0.7,"id":"acout","r":0,"t":"acout","w":2.4,"x":12,"y":39},{"d":0.4,"id":"board","r":0,"t":"board","w":0.9,"x":7.6,"y":39.4},{"d":0.4,"id":"c1","r":0,"t":"corner","w":0.4,"x":0.35,"y":0.35},{"d":0.4,"id":"c2","r":0,"t":"corner","w":0.4,"x":19.65,"y":0.35},{"d":0.4,"id":"c3","r":0,"t":"corner","w":0.4,"x":0.35,"y":39.65},{"d":0.4,"id":"c4","r":0,"t":"corner","w":0.4,"x":19.65,"y":39.65},{"d":0.35,"id":"p1","r":180,"s":"k","t":"person","w":0.5,"x":7.2,"y":5.5},{"d":0.35,"id":"p2","r":180,"s":"k","t":"person","w":0.5,"x":7.85,"y":9.8},{"d":0.35,"id":"p3","r":115,"s":"a","t":"person","w":0.5,"x":9.74,"y":18.48},{"d":0.35,"id":"p4","r":-120,"s":"k","t":"person","w":0.5,"x":16.12,"y":18.2},{"d":0.35,"id":"p5","r":5,"s":"c","t":"person","w":0.5,"x":12.69,"y":23.59},{"d":0.35,"id":"p6","r":0,"s":"k","t":"person","w":0.5,"x":2.12,"y":32.2},{"d":0.35,"id":"p7","r":25,"s":"a","t":"person","w":0.5,"x":10.3,"y":32.3},{"d":0.35,"id":"p8","r":180,"s":"k","t":"person","w":0.5,"x":15,"y":6.8},{"col":1,"d":1.9,"id":"car-1","r":90,"t":"car","w":4.6,"x":2.2,"y":-4.3},{"col":2,"d":1.9,"id":"car-2","r":90,"t":"car","w":4.6,"x":16.2,"y":-4.3},{"col":3,"d":1.9,"id":"car-3","r":90,"t":"car","w":4.6,"x":19,"y":-4.3},{"d":1.8,"id":"wc","r":180,"t":"toilets","w":5,"x":2.75,"y":39},{"d":2,"id":"septic","r":0,"t":"septic","w":3,"x":17.6,"y":1.7},{"d":1.6,"id":"water","r":0,"t":"water","w":2.4,"x":13.8,"y":1.5},{"addon":"sink","d":0.5,"id":"add-sink","r":180,"t":"sink","w":0.8,"x":15.3,"y":4.5},{"addon":"bbq","d":0.8,"id":"add-bbq","r":0,"t":"bbq","w":1.6,"x":16.8,"y":33.5},{"addon":"festoon","d":9,"follow":"fire","id":"add-festoon","r":0,"t":"festoon","w":9,"x":4.5,"y":18.5},{"addon":"palms","d":3,"id":"add-palm-1","r":0,"t":"palm","w":3,"x":18,"y":4},{"addon":"palms","d":3,"id":"add-palm-2","r":0,"t":"palm","w":3,"x":18.25,"y":9},{"addon":"play","d":5,"id":"add-play","r":0,"t":"play","w":5,"x":4,"y":2.75},{"d":0.6,"follow":"tent","id":"coffee-idvh313","r":0,"t":"coffee","w":2.2,"x":3.3,"y":37.05},{"d":0.8,"follow":"tent","id":"chair-idvh314","r":340,"t":"chair","w":0.8,"x":4.95,"y":36.9},{"d":0.8,"follow":"tent","id":"chair-idvh315","r":352,"t":"chair","w":0.8,"x":5.75,"y":36.9},{"d":0.9,"follow":"tent","id":"seat-idvh316","r":0,"t":"seat","w":10,"x":11.2,"y":36.9},{"d":0.6,"follow":"tent","id":"table-idvh317","r":0,"t":"table","w":1.2,"x":7.867,"y":35.75},{"d":0.6,"follow":"tent","id":"table-idvh318","r":0,"t":"table","w":1.2,"x":11.2,"y":35.75},{"d":0.6,"follow":"tent","id":"table-idvh319","r":0,"t":"table","w":1.2,"x":14.533,"y":35.75},{"d":0.5,"follow":"tent","id":"lantern-idvh320","r":0,"t":"lantern","w":0.5,"x":4,"y":34.5},{"d":0.5,"follow":"tent","id":"lantern-idvh321","r":0,"t":"lantern","w":0.5,"x":8,"y":34.5},{"d":0.5,"follow":"tent","id":"lantern-idvh322","r":0,"t":"lantern","w":0.5,"x":12,"y":34.5},{"d":0.5,"follow":"tent","id":"lantern-idvh323","r":0,"t":"lantern","w":0.5,"x":16,"y":34.5},{"id":"path-entry","t":"path","x":11.875,"y":3.05,"w":1.5,"d":4.75,"r":90,"follow":"gate"},{"id":"baffle","t":"baffle","x":11.0,"y":1.3,"w":6.5,"d":2,"r":0,"follow":"gate"},{"id":"gen","t":"gen","x":9.55,"y":39,"w":2.2,"d":1.1,"r":0}],"lights":{"every":2,"styles":["lantern"]},"north":"back-right","seats":"mixed","v":1}};</script>
 <script>if (/[?&]shot/.test(location.search)) document.documentElement.classList.add('shot');</script>
 <script>
 /* core.js */
@@ -215,10 +215,10 @@ MJ.CAT = {
   bbq:{n:'BBQ grill',w:1.6,d:0.8}, coffee:{n:'Coffee corner',w:2,d:0.9}, palm:{n:'Palm tree',w:3,d:3,round:1},
   sink:{n:'Hand-wash sink',w:0.8,d:0.5}, ext:{n:'Fire extinguisher',w:0.4,d:0.4}, screen:{n:'Movie screen',w:3.2,d:0.3},
   play:{n:'Kids play corner',w:5,d:5}, gen:{n:'Generator',w:2.2,d:1.1}, bench:{n:'Bench',w:1.8,d:0.5},
-  tv:{n:'TV',w:1.6,d:0.4}, speaker:{n:'Speaker',w:0.45,d:0.45}, chair:{n:'Armchair',w:0.8,d:0.8}
+  baffle:{n:'Entrance screen wall',w:6.5,d:2}, tv:{n:'TV',w:1.6,d:0.4}, speaker:{n:'Speaker',w:0.45,d:0.45}, chair:{n:'Armchair',w:0.8,d:0.8}
 };
 MJ.ADDABLE = ['person','bonfire','path','seat','chair','table','bench','lantern','corner','festoon','palm','bbq','coffee',
-  'toilets','pantry','sink','ext','tv','speaker','screen','gen','play','car'];
+  'baffle','toilets','pantry','sink','ext','tv','speaker','screen','gen','play','car'];
 /* Recommended answers: the plan uses these until AG taps something else. */
 MJ.REC = {front:'closed', gate:'3', tent:'A-left', wc:'front', truck:[], north:'', power:'grid', lstep:'2',
   lstyle:['lantern'], ac:'ducted', seats:'floor', addons:[], inside:[]};
@@ -355,7 +355,9 @@ MJ.wcPlace = L => {
 
 MJ.genPlace = L => {
   const v = MJ.val('power'), wc = L.items.find(i=>i.id==='wc');
-  if (v==='gen' || v==='both'){ const front = !wc || wc.y<20; put(L,'gen','gen',{x:wc?wc.x:17.6, y:front?-2.3:42.0, r:0}); }
+  const ac = L.items.find(i=>i.id==='acout');
+  if ((v==='gen' || v==='both') && ac) put(L,'gen','gen',{x:ac.x-ac.w/2-1.25, y:ac.y, r:ac.r||0});   // AG 25 Nov: next to the AC machines
+  else if (v==='gen' || v==='both'){ const front = !wc || wc.y<20; put(L,'gen','gen',{x:wc?wc.x:17.6, y:front?-2.3:42.0, r:0}); }
   else drop(L, i => i.id==='gen');
 };
 
@@ -490,9 +492,9 @@ const SY = y => 40 - y;
 const E = (t,a,p) => { const e = document.createElementNS(NS,t); for (const k in a) if (a[k]!=null) e.setAttribute(k,a[k]); if (p) p.appendChild(e); return e; };
 const fmt = v => (Math.round(v*10)/10).toFixed(1).replace(/\.0$/,'') + ' m';
 const FILL = {toilets:'#dfe6ec', pantry:'#d8c196', acout:'#b8bdc3', board:'#7f878f', car:'#a3abb4', bbq:'#3b3b3b', coffee:'var(--wood)',
-  sink:'#e9eef2', ext:'#d1281f', screen:'#f4f4f4', play:'#86c9a6', gen:'#4d6b50', bench:'var(--wood)', tv:'#151515', speaker:'#262626', table:'var(--wood)', seat:'var(--seat)'};
+  sink:'#e9eef2', ext:'#d1281f', screen:'#f4f4f4', play:'#86c9a6', gen:'#4d6b50', baffle:'var(--fence)', bench:'var(--wood)', tv:'#151515', speaker:'#262626', table:'var(--wood)', seat:'var(--seat)'};
 const LABEL = {tent:'Tent', bonfire:'Fire', toilets:'2 toilets', septic:'Sewage tank', water:'Water tank', pantry:'Pantry', acout:'AC',
-  board:'Power', gate:'Gate', play:'Kids', screen:'Screen', bbq:'BBQ', coffee:'Coffee', gen:'Generator'};
+  board:'Power', gate:'Gate', play:'Kids', screen:'Screen', bbq:'BBQ', coffee:'Coffee', gen:'Generator', baffle:'Entrance screen'};
 const PERSON = {k:['#f4f2ec','#555'], a:['#17171b','#000'], c:['#3d6fa8','#223']};
 const xf = it => `translate(${it.x} ${SY(it.y)}) rotate(${-(it.r||0)}) scale(1 -1)`;
 
@@ -532,6 +534,11 @@ function shape(g,it){
       (it.doors || ['front']).forEach(s => { if (s==='front') R(-0.45,-hd-0.06,0.9,0.14,'#5a3d26'); else if (s==='back') R(-0.45,hd-0.08,0.9,0.14,'#5a3d26');
         else if (s==='right') R(hw-0.08,-0.45,0.14,0.9,'#5a3d26'); else R(-hw-0.06,-0.45,0.14,0.9,'#5a3d26'); });
       E('line',{x1:-hw+0.35,y1:hd-0.35,x2:hw-0.35,y2:hd-0.35,stroke:'#8a6d43','stroke-width':0.08},g); break; }
+    case 'baffle': {   // L-shaped screen: long wall on the far side, closed on the left, open to the right
+      R(-hw,-hd,w,d,'var(--gravel)','sh'); const wl = w-1.5;
+      R(-hw,hd-0.16,wl,0.16,'var(--fence)'); R(-hw,-hd,0.16,d,'var(--fence)');
+      E('path',{d:`M ${(-hw+1).toFixed(2)} ${(-hd+0.6).toFixed(2)} H ${(hw-0.75).toFixed(2)} V ${(hd+0.6).toFixed(2)}`,fill:'none',stroke:'var(--sel)','stroke-width':0.09,'stroke-dasharray':'0.25 0.18','marker-end':null},g);
+      break; }
     case 'acout': R(-hw,-hd,w,d,FILL.acout,'sh'); C(-w/4,0,0.24,'#59606a'); C(w/4,0,0.24,'#59606a'); break;
     case 'corner': case 'lantern':
       C(0,0,it.t==='corner'?0.9:0.55,'var(--lamp)',{'fill-opacity':0.22}); C(0,0,0.2,'var(--lamp)',{stroke:'var(--fence)','stroke-width':0.05,'class':'sh'}); break;
@@ -782,7 +789,7 @@ function makeTextures(){
 function mat(o){ return new T.MeshStandardMaterial(Object.assign({roughness:0.85, metalness:0}, o)); }
 function makeMaterials(){
   M.sandBig = mat({map:TEX.sand, roughness:1, color:0xffffff});
-  const plotTex = TEX.sand.clone(); plotTex.repeat.set(5,10); plotTex.needsUpdate = true; M.plot = mat({map:plotTex, roughness:1, color:0xfff3e0});
+  const plotTex = TEX.sand.clone(); plotTex.repeat.set(5,10); plotTex.needsUpdate = true; M.plot = mat({map:plotTex, roughness:1, color:0xeea687});   // red sand inside the fence (AG 25 Nov)
   M.dune = mat({color:0xcfae78, roughness:1});
   M.steel = mat({color:0x2a2622, roughness:0.6, metalness:0.5}); M.fabric = mat({map:TEX.fabric, side:T.DoubleSide, roughness:0.95});
   M.canvas = mat({map:TEX.canvas, side:T.DoubleSide, roughness:0.9}); M.sadu = mat({map:TEX.sadu, roughness:0.9});
@@ -986,17 +993,23 @@ V.view = name => {
   else if (name==='bird') setAuto(true);
   animateTo(p);
 };
+V.look = (px,py,ph,lx,ly,lh) => { stopTour(); setAuto(false); anim = null; Object.assign(ctl, poseLook(px,py,ph,lx,ly,lh)); };
 V.tour = () => {
   if (tour){ stopTour(); return; }
   setAuto(false); anim = null;
   const g = MJ.find('gate')||{x:7.5}, f = MJ.find('fire')||{x:13,y:20,w:6.4}, t = MJ.find('tent');
   const tf = t ? MJ.toPlan(t,0,-t.d/2-2.6) : [10,28], tin = t ? MJ.toPlan(t,0,t.d/2-1.4) : [10,35], s = f.x>10 ? -1 : 1;
-  const K = [[10,-30,17, 10,12,0,'Arriving. Cars stay outside.'], [g.x,-7,2.3, g.x,10,1.2,'The gate'], [g.x,1.5,1.7, g.x,16,1.1,'Walkway with low lights'],
+  const bf = MJ.find('baffle'), nOpen = t ? 4-(t.closed||[]).length : 2, words = ['no','one','two','three','four'];
+  const entry = bf ? (() => { const ex = MJ.toPlan(bf, bf.w/2-0.75, 0), wb = MJ.toPlan(bf, 0, bf.d/2+1.6);
+      return [[g.x,0.6,1.7, g.x+1.5,2.2,1.2,'Screen wall inside the gate: turn right'], [ex[0],ex[1],1.7, ex[0]-0.4,ex[1]+6,1.1,'Past the screen wall'],
+              [wb[0]+0.4,wb[1],1.7, g.x,16,1.1,'Walkway with low lights, red sand both sides']]; })()
+    : [[g.x,1.5,1.7, g.x,16,1.1,'Walkway with low lights']];
+  const K = [[10,-30,17, 10,12,0,'Arriving. Cars stay outside.'], [g.x,-7,2.3, g.x,10,1.2,'The gate'], ...entry,
     [g.x+s*0.3,11,1.7, f.x,f.y,0.6,'Fire pit with floor seating'], [f.x+s*-2.2,f.y-5.2,2.4, f.x,f.y,0.3,'Fire pit with floor seating'],
-    [tf[0],tf[1],1.7, t?t.x:10, t?t.y:34, 1.3,'The tent, open on two sides'], [tin[0],tin[1],1.2, f.x,f.y,0.8,'Seated view from inside the tent'],
+    [tf[0],tf[1],1.7, t?t.x:10, t?t.y:34, 1.3,'The tent, open on '+words[nOpen]+' sides'], [tin[0],tin[1],1.2, f.x,f.y,0.8,'Seated view from inside the tent'],
     [10+s*-16,-12,36, 10,22,0,"Bird's-eye"]];
   const P = K.map(k => new T.Vector3(TX(k[0]),k[2],TZ(k[1]))), Lk = K.map(k => new T.Vector3(TX(k[3]),k[5],TZ(k[4])));
-  tour = {pc:new T.CatmullRomCurve3(P), lc:new T.CatmullRomCurve3(Lk), caps:K.map(k => k[6]), t0:performance.now(), dur:36000};
+  tour = {pc:new T.CatmullRomCurve3(P), lc:new T.CatmullRomCurve3(Lk), caps:K.map(k => k[6]), t0:performance.now(), dur:42000};
   document.getElementById('tourBtn').textContent = '■ Stop'; capEl.hidden = false;
 };
 function stepTour(now){
@@ -1266,7 +1279,24 @@ B.play = (g,it) => {
   box(1.0,0.06,1.0,y,it.w/5,1.2,0,g); [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c => box(0.06,1.2,0.06,y,it.w/5+c[0]*0.45,0.6,c[1]*0.45,g,false));
   const sl = box(0.5,0.04,2.1,r,it.w/5,0.62,1.4,g); sl.rotation.x = 0.6;
 };
-B.gen = (g,it) => { box(it.w,0.1,it.d,M.dark,0,0.05,0,g); box(it.w-0.1,1.2,it.d-0.1,mat(0x3f5f45),0,0.7,0,g); cyl(0.05,0.05,0.5,M.metal,it.w/2-0.3,1.5,0,g,8); };
+B.gen = (g,it) => {   // silent canopy diesel generator on a concrete pad
+  const w = it.w, d = it.d; box(w+0.3,0.12,d+0.3,M.stone,0,0.06,0,g); box(w,0.14,d,M.dark,0,0.19,0,g);
+  box(w-0.08,1.15,d-0.08,mat(0x3f5f45,{roughness:0.55,metalness:0.25}),0,0.835,0,g);
+  for (let k=0;k<7;k++) box(0.9,0.035,0.02,M.dark,-w/4,0.5+k*0.1,d/2-0.03,g,false);
+  box(0.5,0.7,0.02,mat(0x2f4935),w/4,0.85,d/2-0.03,g,false); box(0.12,0.06,0.02,mat(0xf2c200),w/4,1.05,d/2-0.01,g,false);
+  cyl(0.06,0.06,0.45,M.metal,w/2-0.3,1.6,-0.15,g,10);
+};
+B.baffle = (g,it) => {   // L-shaped privacy screen inside the gate: fabric mesh like the fence, 2 m high, open to the right
+  const w = it.w, d = it.d, wl = w-1.5, h = 2.0;
+  const p = flat(w,d,M.gravel,0.014,g); uvScale(p.geometry,w/1.5,d/1.5);
+  const wall = (len,x,z,rot) => { const s = new T.Group(); s.position.set(x,0,z); s.rotation.y = rot; g.add(s);
+    const m = new T.Mesh(new T.PlaneGeometry(len,h-0.06), M.fabric); m.position.y = (h-0.06)/2+0.02; m.castShadow = true; m.receiveShadow = true; s.add(m);
+    box(len,0.04,0.04,M.dark,0,h,0,s,false);
+    for (let k=0;k<=Math.round(len/2);k++){ const px = -len/2 + k*len/Math.max(1,Math.round(len/2)); cyl(0.045,0.045,h+0.1,M.dark,px,(h+0.1)/2,0,s,8); } };
+  wall(wl, -w/2+wl/2, -d/2, 0); wall(d, -w/2, 0, Math.PI/2);
+  box(0.22,0.08,0.1,M.lamp,-w/2+wl-0.3,h-0.25,-d/2+0.07,g,false); V.glowAt(g,-w/2+wl-0.3,h-0.25,-d/2+0.12,1.0); V.poolAt(g,-w/2+wl/2,0,4.0,0.55);
+  V.poolAt(g,w/2-0.75,0,2.6,0.45);
+};
 B.bench = (g,it) => { box(it.w,0.05,it.d,M.wood,0,0.45,0,g); [-1,1].forEach(s => box(0.06,0.45,it.d-0.06,M.wood,s*(it.w/2-0.15),0.225,0,g,false)); box(it.w,0.32,0.04,M.wood,0,0.74,-(it.d/2-0.03),g); };
 B.tv = (g,it) => { cyl(0.2,0.2,0.03,M.dark,0,0.015,0,g,16); cyl(0.03,0.03,0.9,M.dark,0,0.47,0,g,8); box(it.w,0.92,0.06,M.dark,0,1.3,0,g); const s = plane(it.w-0.06,0.86,M.glass,g); s.position.set(0,1.3,0.032); };
 B.speaker = (g) => { [0,1,2].forEach(k => { const l = cyl(0.015,0.015,1.25,M.dark,0,0.6,0,g,6); l.rotation.set(0.25,k*Math.PI*2/3,0,'YXZ'); }); cyl(0.02,0.02,0.6,M.dark,0,1.15,0,g,6); box(0.35,0.55,0.3,M.dark,0,1.6,0,g); };
